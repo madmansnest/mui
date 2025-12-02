@@ -6,7 +6,7 @@ module Mui
     class InsertMode < Base
       def handle(key)
         case key
-        when 27 # Escape
+        when KeyCode::ESCAPE
           handle_escape
         when Curses::KEY_LEFT
           handle_move_left
@@ -16,9 +16,9 @@ module Mui
           handle_move_up
         when Curses::KEY_DOWN
           handle_move_down
-        when 127, Curses::KEY_BACKSPACE
+        when KeyCode::BACKSPACE, Curses::KEY_BACKSPACE
           handle_backspace
-        when 13, 10, Curses::KEY_ENTER
+        when KeyCode::ENTER_CR, KeyCode::ENTER_LF, Curses::KEY_ENTER
           handle_enter
         else
           handle_character_input(key)
@@ -88,7 +88,7 @@ module Mui
       def extract_printable_char(key)
         if key.is_a?(String)
           key
-        elsif key.is_a?(Integer) && key >= 32 && key < 127
+        elsif key.is_a?(Integer) && key >= KeyCode::PRINTABLE_MIN && key < KeyCode::PRINTABLE_MAX
           key.chr
         end
       end
