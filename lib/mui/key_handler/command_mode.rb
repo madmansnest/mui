@@ -115,7 +115,7 @@ module Mui
           @buffer.save
         end
         result(message: "\"#{@buffer.name}\" written")
-      rescue StandardError => e
+      rescue SystemCallError => e
         result(message: "Error: #{e.message}")
       end
     end

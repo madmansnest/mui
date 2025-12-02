@@ -39,6 +39,7 @@ Metrics/MethodLength:
     - 'test/e2e/test_visual_mode.rb'
     - 'test/integration/test_editor_integration.rb'
     - 'test/mui/editor/test_insert_mode.rb'
+    - 'test/mui/key_handler/test_command_mode.rb'
     - 'test/mui/test_buffer.rb'
     - 'test/mui/test_window.rb'
     - 'test/test_helper.rb'

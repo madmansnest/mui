@@ -90,7 +90,7 @@ module Mui
 
       def key_to_char(key)
         key.is_a?(String) ? key : key.chr
-      rescue StandardError
+      rescue RangeError
         nil
       end
 

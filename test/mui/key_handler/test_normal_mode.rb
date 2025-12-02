@@ -329,4 +329,39 @@ class TestKeyHandlerNormalMode < Minitest::Test
       assert_nil result[:mode]
     end
   end
+
+  class TestKeyToChar < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello"
+      @window = Mui::Window.new(@buffer)
+      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer)
+    end
+
+    def test_returns_nil_for_out_of_range_integer
+      # RangeError should be caught and return nil
+      result = @handler.send(:key_to_char, -1)
+
+      assert_nil result
+    end
+
+    def test_returns_nil_for_very_large_integer
+      # RangeError should be caught and return nil
+      result = @handler.send(:key_to_char, 0x110000)
+
+      assert_nil result
+    end
+
+    def test_returns_string_for_valid_string_input
+      result = @handler.send(:key_to_char, "a")
+
+      assert_equal "a", result
+    end
+
+    def test_returns_char_for_valid_integer_input
+      result = @handler.send(:key_to_char, 97) # 'a'
+
+      assert_equal "a", result
+    end
+  end
 end

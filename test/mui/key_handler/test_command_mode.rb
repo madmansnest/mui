@@ -303,4 +303,41 @@ class TestKeyHandlerCommandMode < Minitest::Test
       assert_nil result[:mode]
     end
   end
+
+  class TestWriteError < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello"
+      @window = Mui::Window.new(@buffer)
+      @command_line = Mui::CommandLine.new
+      @handler = Mui::KeyHandler::CommandMode.new(@window, @buffer, @command_line)
+    end
+
+    def test_write_to_nonexistent_directory_shows_error
+      @buffer.instance_variable_set(:@name, "/nonexistent/dir/test.txt")
+
+      @command_line.input("w")
+      result = @handler.handle(13)
+
+      assert_match(/Error:/, result[:message])
+    end
+
+    def test_write_to_readonly_path_shows_error
+      Dir.mktmpdir do |dir|
+        readonly_dir = File.join(dir, "readonly")
+        Dir.mkdir(readonly_dir)
+        File.chmod(0o000, readonly_dir)
+
+        path = File.join(readonly_dir, "test.txt")
+        @buffer.instance_variable_set(:@name, path)
+
+        @command_line.input("w")
+        result = @handler.handle(13)
+
+        assert_match(/Error:/, result[:message])
+      ensure
+        File.chmod(0o755, readonly_dir) if File.exist?(readonly_dir)
+      end
+    end
+  end
 end
