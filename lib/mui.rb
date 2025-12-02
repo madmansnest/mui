@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "mui/version"
+require_relative "mui/key_code"
 require_relative "mui/screen"
 require_relative "mui/input"
 require_relative "mui/buffer"

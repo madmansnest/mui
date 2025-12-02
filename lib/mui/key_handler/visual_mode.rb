@@ -24,7 +24,7 @@ module Mui
 
       def handle_visual_key(key)
         case key
-        when 27 # Escape
+        when KeyCode::ESCAPE
           result(mode: Mode::NORMAL, clear_selection: true)
         when "v"
           handle_v_key
