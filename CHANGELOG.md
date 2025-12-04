@@ -27,6 +27,11 @@
   - `O` to open new line above
   - `x` to delete character at cursor
   - Backspace to delete and join lines
+- Delete operator (`d`):
+  - `dd` to delete current line
+  - `d` + motion: `dw`, `de`, `db`, `d0`, `d$`, `dgg`, `dG`
+  - `df{char}`, `dt{char}`, `dF{char}`, `dT{char}` to delete to/till character
+  - `d` in Visual mode to delete selection (character-wise and line-wise)
 - Ex commands:
   - `:w` to save file
   - `:w <filename>` to save as
