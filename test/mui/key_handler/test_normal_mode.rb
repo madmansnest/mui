@@ -514,4 +514,159 @@ class TestKeyHandlerNormalMode < Minitest::Test
       assert_equal "hello world", @buffer.line(0)
     end
   end
+
+  class TestChangeOperator < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello world"
+      @buffer.insert_line(1, "second line")
+      @buffer.insert_line(2, "third line")
+      @window = Mui::Window.new(@buffer)
+      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer)
+    end
+
+    def test_cc_clears_line_and_enters_insert_mode
+      @window.cursor_row = 1
+      @window.cursor_col = 3
+
+      @handler.handle("c")
+      result = @handler.handle("c")
+
+      assert_equal "", @buffer.line(1)
+      assert_equal 0, @window.cursor_col
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_cw_changes_word
+      @window.cursor_col = 0
+
+      @handler.handle("c")
+      result = @handler.handle("w")
+
+      # cw behaves like ce in Vim (changes to end of word, not to start of next word)
+      assert_equal " world", @buffer.line(0)
+      assert_equal 0, @window.cursor_col
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_ce_changes_to_end_of_word
+      @window.cursor_col = 0
+
+      @handler.handle("c")
+      result = @handler.handle("e")
+
+      assert_equal " world", @buffer.line(0)
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_cb_changes_to_previous_word
+      @window.cursor_col = 8
+
+      @handler.handle("c")
+      result = @handler.handle("b")
+
+      assert_equal "hello rld", @buffer.line(0)
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_c0_changes_to_line_start
+      @window.cursor_col = 5
+
+      @handler.handle("c")
+      result = @handler.handle("0")
+
+      assert_equal " world", @buffer.line(0)
+      assert_equal 0, @window.cursor_col
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_c_dollar_changes_to_line_end
+      @window.cursor_col = 5
+
+      @handler.handle("c")
+      result = @handler.handle("$")
+
+      assert_equal "hello", @buffer.line(0)
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_cG_changes_to_file_end
+      @window.cursor_row = 1
+
+      @handler.handle("c")
+      result = @handler.handle("G")
+
+      assert_equal 2, @buffer.line_count
+      assert_equal "hello world", @buffer.line(0)
+      assert_equal "", @buffer.line(1)
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_cgg_changes_to_file_start
+      @window.cursor_row = 2
+      @window.cursor_col = 3
+
+      @handler.handle("c")
+      @handler.handle("g")
+      result = @handler.handle("g")
+
+      assert_equal 1, @buffer.line_count
+      assert_equal "rd line", @buffer.line(0)
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_cf_changes_to_char
+      @window.cursor_col = 0
+
+      @handler.handle("c")
+      @handler.handle("f")
+      result = @handler.handle("o")
+
+      assert_equal " world", @buffer.line(0)
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_ct_changes_till_char
+      @window.cursor_col = 0
+
+      @handler.handle("c")
+      @handler.handle("t")
+      result = @handler.handle("o")
+
+      assert_equal "o world", @buffer.line(0)
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_cF_changes_backward_to_char
+      @window.cursor_col = 10
+
+      @handler.handle("c")
+      @handler.handle("F")
+      result = @handler.handle("o")
+
+      assert_equal "hello wd", @buffer.line(0)
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_cT_changes_backward_till_char
+      @window.cursor_col = 10
+
+      @handler.handle("c")
+      @handler.handle("T")
+      result = @handler.handle("o")
+
+      assert_equal "hello wod", @buffer.line(0)
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_c_with_invalid_motion_cancels
+      @window.cursor_col = 5
+
+      @handler.handle("c")
+      result = @handler.handle("z")
+
+      assert_equal "hello world", @buffer.line(0)
+      assert_nil result.mode
+    end
+  end
 end

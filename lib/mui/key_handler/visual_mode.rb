@@ -69,6 +69,8 @@ module Mui
           result
         when "d"
           handle_delete
+        when "c"
+          handle_change
         else
           result
         end
@@ -92,6 +94,25 @@ module Mui
           delete_range(range)
         end
         result(mode: Mode::NORMAL, clear_selection: true)
+      end
+
+      def handle_change
+        range = @selection.normalized_range
+        if @selection.line_mode
+          change_lines(range)
+        else
+          delete_range(range)
+        end
+        result(mode: Mode::INSERT, clear_selection: true)
+      end
+
+      def change_lines(range)
+        (range[:end_row] - range[:start_row] + 1).times do
+          @buffer.delete_line(range[:start_row])
+        end
+        @buffer.insert_line(range[:start_row])
+        self.cursor_row = range[:start_row]
+        self.cursor_col = 0
       end
 
       def delete_lines(range)

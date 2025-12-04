@@ -348,4 +348,100 @@ class TestKeyHandlerVisualMode < Minitest::Test
       assert_equal 0, @window.cursor_row
     end
   end
+
+  class TestChangeOperator < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello world"
+      @buffer.insert_line(1, "second line")
+      @buffer.insert_line(2, "third line")
+      @window = Mui::Window.new(@buffer)
+    end
+
+    def test_c_changes_character_selection
+      @selection = Mui::Selection.new(0, 2)
+      @selection.update_end(0, 6)
+      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection)
+
+      result = @handler.handle("c")
+
+      assert_equal "heorld", @buffer.line(0)
+      assert_equal Mui::Mode::INSERT, result.mode
+      assert result.clear_selection?
+    end
+
+    def test_c_changes_multi_line_selection
+      @selection = Mui::Selection.new(0, 6)
+      @selection.update_end(1, 6)
+      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection)
+
+      result = @handler.handle("c")
+
+      assert_equal 2, @buffer.line_count
+      assert_equal "hello line", @buffer.line(0)
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_c_moves_cursor_to_selection_start
+      @selection = Mui::Selection.new(0, 3)
+      @selection.update_end(0, 8)
+      @window.cursor_col = 8
+      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection)
+
+      @handler.handle("c")
+
+      assert_equal 3, @window.cursor_col
+    end
+  end
+
+  class TestChangeOperatorLineMode < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello world"
+      @buffer.insert_line(1, "second line")
+      @buffer.insert_line(2, "third line")
+      @window = Mui::Window.new(@buffer)
+    end
+
+    def test_c_changes_single_line_in_line_mode
+      @selection = Mui::Selection.new(1, 0, line_mode: true)
+      @handler = Mui::KeyHandler::VisualLineMode.new(@window, @buffer, @selection)
+      @window.cursor_row = 1
+
+      result = @handler.handle("c")
+
+      assert_equal 3, @buffer.line_count
+      assert_equal "hello world", @buffer.line(0)
+      assert_equal "", @buffer.line(1)
+      assert_equal "third line", @buffer.line(2)
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_c_changes_multiple_lines_in_line_mode
+      @selection = Mui::Selection.new(0, 0, line_mode: true)
+      @selection.update_end(1, 0)
+      @handler = Mui::KeyHandler::VisualLineMode.new(@window, @buffer, @selection)
+
+      result = @handler.handle("c")
+
+      assert_equal 2, @buffer.line_count
+      assert_equal "", @buffer.line(0)
+      assert_equal "third line", @buffer.line(1)
+      assert_equal 0, @window.cursor_row
+      assert_equal 0, @window.cursor_col
+      assert_equal Mui::Mode::INSERT, result.mode
+    end
+
+    def test_c_moves_cursor_to_first_changed_line
+      @selection = Mui::Selection.new(1, 0, line_mode: true)
+      @selection.update_end(2, 0)
+      @handler = Mui::KeyHandler::VisualLineMode.new(@window, @buffer, @selection)
+      @window.cursor_row = 2
+
+      @handler.handle("c")
+
+      assert_equal 1, @window.cursor_row
+      assert_equal 0, @window.cursor_col
+    end
+  end
 end
