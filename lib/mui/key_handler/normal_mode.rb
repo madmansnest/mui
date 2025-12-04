@@ -71,6 +71,9 @@ module Mui
         when "d"
           @pending_motion = :d
           result
+        when "c"
+          @pending_motion = :c
+          result
         when ":"
           result(mode: Mode::COMMAND)
         when "v"
@@ -93,6 +96,12 @@ module Mui
           handle_delete_to_file_start(char)
         when :df, :dF, :dt, :dT
           handle_delete_find_char(char)
+        when :c
+          handle_change_pending(char)
+        when :cg
+          handle_change_to_file_start(char)
+        when :cf, :cF, :ct, :cT
+          handle_change_find_char(char)
         else
           motion_result = execute_pending_motion(char)
           apply_motion(motion_result) if motion_result
@@ -332,6 +341,147 @@ module Mui
         @window.clamp_cursor_to_line(@buffer)
       end
 
+      # Change operator handlers
+      def handle_change_pending(char)
+        case char
+        when "c"
+          handle_change_line
+        when "w"
+          handle_change_motion(:word_forward)
+        when "e"
+          handle_change_motion(:word_end)
+        when "b"
+          handle_change_motion(:word_backward)
+        when "0"
+          handle_change_to_line_start
+        when "$"
+          handle_change_to_line_end
+        when "g"
+          @pending_motion = :cg
+          result
+        when "G"
+          handle_change_to_file_end
+        when "f"
+          @pending_motion = :cf
+          result
+        when "F"
+          @pending_motion = :cF
+          result
+        when "t"
+          @pending_motion = :ct
+          result
+        when "T"
+          @pending_motion = :cT
+          result
+        else
+          clear_pending
+        end
+      end
+
+      def handle_change_line
+        @buffer.lines[cursor_row] = +""
+        self.cursor_col = 0
+        @pending_motion = nil
+        result(mode: Mode::INSERT)
+      end
+
+      def handle_change_motion(motion_type)
+        start_pos = { row: cursor_row, col: cursor_col }
+        # cw behaves like ce in Vim (changes to end of word, not to start of next word)
+        effective_motion = motion_type == :word_forward ? :word_end : motion_type
+        end_pos = calculate_motion_end(effective_motion)
+        return clear_pending unless end_pos
+
+        inclusive = effective_motion == :word_end
+        execute_delete(start_pos, end_pos, inclusive: inclusive, clamp: false)
+        @pending_motion = nil
+        result(mode: Mode::INSERT)
+      end
+
+      def handle_change_to_line_start
+        if cursor_col.zero?
+          @pending_motion = nil
+          return result(mode: Mode::INSERT)
+        end
+
+        @buffer.delete_range(cursor_row, 0, cursor_row, cursor_col - 1)
+        self.cursor_col = 0
+        @pending_motion = nil
+        result(mode: Mode::INSERT)
+      end
+
+      def handle_change_to_line_end
+        line_length = @buffer.line(cursor_row).length
+        if line_length.zero?
+          @pending_motion = nil
+          return result(mode: Mode::INSERT)
+        end
+
+        end_col = line_length - 1
+        @buffer.delete_range(cursor_row, cursor_col, cursor_row, end_col)
+        # Don't clamp cursor - keep it at original position for insert mode
+        @pending_motion = nil
+        result(mode: Mode::INSERT)
+      end
+
+      def handle_change_to_file_end
+        last_row = @buffer.line_count - 1
+        if cursor_row == last_row
+          handle_change_line
+        else
+          (last_row - cursor_row + 1).times { @buffer.delete_line(cursor_row) }
+          @buffer.insert_line(cursor_row) if @buffer.line_count == cursor_row
+          self.cursor_row = [cursor_row, @buffer.line_count - 1].min
+          self.cursor_col = 0
+          @pending_motion = nil
+          result(mode: Mode::INSERT)
+        end
+      end
+
+      def handle_change_to_file_start(char)
+        return clear_pending unless char == "g"
+
+        if cursor_row.zero?
+          handle_change_to_line_start
+        else
+          cursor_row.times { @buffer.delete_line(0) }
+          @buffer.delete_range(0, 0, 0, cursor_col - 1) if cursor_col.positive?
+          self.cursor_row = 0
+          self.cursor_col = 0
+          @pending_motion = nil
+          result(mode: Mode::INSERT)
+        end
+      end
+
+      def handle_change_find_char(char)
+        motion_result = case @pending_motion
+                        when :cf
+                          Motion.find_char_forward(@buffer, cursor_row, cursor_col, char)
+                        when :cF
+                          Motion.find_char_backward(@buffer, cursor_row, cursor_col, char)
+                        when :ct
+                          Motion.till_char_forward(@buffer, cursor_row, cursor_col, char)
+                        when :cT
+                          Motion.till_char_backward(@buffer, cursor_row, cursor_col, char)
+                        end
+        return clear_pending unless motion_result
+
+        execute_change_find_char(motion_result)
+        @pending_motion = nil
+        result(mode: Mode::INSERT)
+      end
+
+      def execute_change_find_char(motion_result)
+        case @pending_motion
+        when :cf, :ct
+          @buffer.delete_range(cursor_row, cursor_col, cursor_row, motion_result[:col])
+        when :cF, :cT
+          @buffer.delete_range(cursor_row, motion_result[:col], cursor_row, cursor_col - 1)
+          self.cursor_col = motion_result[:col]
+        end
+        # Don't clamp cursor - keep it at original position for insert mode
+      end
+
       def calculate_motion_end(motion_type)
         case motion_type
         when :word_forward
@@ -343,15 +493,15 @@ module Mui
         end
       end
 
-      def execute_delete(start_pos, end_pos, inclusive: false)
+      def execute_delete(start_pos, end_pos, inclusive: false, clamp: true)
         if start_pos[:row] == end_pos[:row]
-          execute_delete_same_line(start_pos, end_pos, inclusive: inclusive)
+          execute_delete_same_line(start_pos, end_pos, inclusive: inclusive, clamp: clamp)
         else
-          execute_delete_across_lines(start_pos, end_pos, inclusive: inclusive)
+          execute_delete_across_lines(start_pos, end_pos, inclusive: inclusive, clamp: clamp)
         end
       end
 
-      def execute_delete_same_line(start_pos, end_pos, inclusive: false)
+      def execute_delete_same_line(start_pos, end_pos, inclusive: false, clamp: true)
         from_col = [start_pos[:col], end_pos[:col]].min
         to_col = [start_pos[:col], end_pos[:col]].max
         to_col -= 1 unless inclusive
@@ -359,10 +509,10 @@ module Mui
 
         @buffer.delete_range(start_pos[:row], from_col, start_pos[:row], to_col)
         self.cursor_col = from_col
-        @window.clamp_cursor_to_line(@buffer)
+        @window.clamp_cursor_to_line(@buffer) if clamp
       end
 
-      def execute_delete_across_lines(start_pos, end_pos, inclusive: false)
+      def execute_delete_across_lines(start_pos, end_pos, inclusive: false, clamp: true)
         from_row, to_row = [start_pos[:row], end_pos[:row]].minmax
         from_col = from_row == start_pos[:row] ? start_pos[:col] : end_pos[:col]
         to_col = to_row == end_pos[:row] ? end_pos[:col] : start_pos[:col]
@@ -371,7 +521,7 @@ module Mui
         @buffer.delete_range(from_row, from_col, to_row, to_col)
         self.cursor_row = from_row
         self.cursor_col = from_col
-        @window.clamp_cursor_to_line(@buffer)
+        @window.clamp_cursor_to_line(@buffer) if clamp
       end
 
       def apply_motion(motion_result)

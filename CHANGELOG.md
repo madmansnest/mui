@@ -32,6 +32,12 @@
   - `d` + motion: `dw`, `de`, `db`, `d0`, `d$`, `dgg`, `dG`
   - `df{char}`, `dt{char}`, `dF{char}`, `dT{char}` to delete to/till character
   - `d` in Visual mode to delete selection (character-wise and line-wise)
+- Change operator (`c`):
+  - `cc` to change current line (clear and enter Insert mode)
+  - `c` + motion: `cw`, `ce`, `cb`, `c0`, `c$`, `cgg`, `cG`
+  - `cf{char}`, `ct{char}`, `cF{char}`, `cT{char}` to change to/till character
+  - `c` in Visual mode to change selection (character-wise and line-wise)
+  - `cw` behaves like `ce` (changes to end of word, preserving space) matching Vim behavior
 - Ex commands:
   - `:w` to save file
   - `:w <filename>` to save as

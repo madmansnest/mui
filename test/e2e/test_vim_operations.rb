@@ -367,4 +367,102 @@ class TestE2EVimOperations < Minitest::Test
       .assert_line_count(1)
       .assert_line(0, "Line 3")
   end
+
+  def test_cc_change_line
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("Line 1<Enter>Line 2<Enter>Line 3")
+      .type("<Esc>")
+      .type("k") # Move to Line 2
+      .assert_line(1, "Line 2")
+
+    runner
+      .type("cc")
+      .assert_mode(Mui::Mode::INSERT)
+      .assert_line(1, "")
+      .type("New Line 2")
+      .type("<Esc>")
+      .assert_line(1, "New Line 2")
+  end
+
+  def test_cw_change_word
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("hello world foo")
+      .type("<Esc>")
+      .type("0") # Move to start
+
+    # cw behaves like ce in Vim (changes to end of word, preserving space)
+    runner
+      .type("cw")
+      .assert_mode(Mui::Mode::INSERT)
+      .type("goodbye")
+      .type("<Esc>")
+      .assert_line(0, "goodbye world foo")
+  end
+
+  def test_c_dollar_change_to_line_end
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("hello world")
+      .type("<Esc>")
+      .type("0") # Move to start
+      .type("w") # Move to "world"
+      .assert_cursor(0, 6)
+
+    runner
+      .type("c$")
+      .assert_mode(Mui::Mode::INSERT)
+      .type("universe")
+      .type("<Esc>")
+      .assert_line(0, "hello universe")
+  end
+
+  def test_visual_mode_change
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("hello world")
+      .type("<Esc>")
+      .type("0") # Move to start
+
+    runner
+      .type("v")
+      .assert_mode(Mui::Mode::VISUAL)
+      .type("llll") # Select "hello"
+      .type("c")
+      .assert_mode(Mui::Mode::INSERT)
+      .type("goodbye")
+      .type("<Esc>")
+      .assert_line(0, "goodbye world")
+  end
+
+  def test_visual_line_mode_change
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("Line 1<Enter>Line 2<Enter>Line 3")
+      .type("<Esc>")
+      .type("gg") # Move to start
+
+    runner
+      .type("V")
+      .assert_mode(Mui::Mode::VISUAL_LINE)
+      .type("j") # Select 2 lines
+      .type("c")
+      .assert_mode(Mui::Mode::INSERT)
+      .assert_line_count(2)
+      .type("New content")
+      .type("<Esc>")
+      .assert_line(0, "New content")
+      .assert_line(1, "Line 3")
+  end
 end
