@@ -353,4 +353,73 @@ class TestBuffer
       assert_equal "", buffer.line(100)
     end
   end
+
+  class TestDeleteRange < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+    end
+
+    def teardown
+      @buffer = nil
+    end
+
+    def test_delete_range_within_same_line
+      @buffer.lines[0] = "hello world"
+
+      @buffer.delete_range(0, 2, 0, 5)
+
+      assert_equal "heworld", @buffer.line(0)
+      assert @buffer.modified
+    end
+
+    def test_delete_range_at_line_start
+      @buffer.lines[0] = "hello"
+
+      @buffer.delete_range(0, 0, 0, 2)
+
+      assert_equal "lo", @buffer.line(0)
+    end
+
+    def test_delete_range_at_line_end
+      @buffer.lines[0] = "hello"
+
+      @buffer.delete_range(0, 3, 0, 4)
+
+      assert_equal "hel", @buffer.line(0)
+    end
+
+    def test_delete_range_across_two_lines
+      @buffer.lines[0] = "hello"
+      @buffer.insert_line(1, "world")
+
+      @buffer.delete_range(0, 2, 1, 2)
+
+      assert_equal 1, @buffer.line_count
+      assert_equal "held", @buffer.line(0)
+    end
+
+    def test_delete_range_across_multiple_lines
+      @buffer.lines[0] = "line1"
+      @buffer.insert_line(1, "line2")
+      @buffer.insert_line(2, "line3")
+      @buffer.insert_line(3, "line4")
+
+      @buffer.delete_range(0, 2, 2, 2)
+
+      assert_equal 2, @buffer.line_count
+      assert_equal "lie3", @buffer.line(0)
+      assert_equal "line4", @buffer.line(1)
+    end
+
+    def test_delete_range_entire_line_content
+      @buffer.lines[0] = "hello"
+      @buffer.insert_line(1, "world")
+
+      @buffer.delete_range(0, 0, 0, 4)
+
+      assert_equal 2, @buffer.line_count
+      assert_equal "", @buffer.line(0)
+      assert_equal "world", @buffer.line(1)
+    end
+  end
 end
