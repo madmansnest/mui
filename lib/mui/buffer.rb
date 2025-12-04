@@ -74,10 +74,33 @@ module Mui
       delete_line(row + 1)
     end
 
+    def delete_range(start_row, start_col, end_row, end_col)
+      if start_row == end_row
+        delete_within_line(start_row, start_col, end_col)
+      else
+        delete_across_lines(start_row, start_col, end_row, end_col)
+      end
+      @modified = true
+    end
+
     private
 
     def empty_line
       String.new
+    end
+
+    def delete_within_line(row, start_col, end_col)
+      line = @lines[row] || ""
+      @lines[row] = (line[0...start_col] || "") + (line[(end_col + 1)..] || "")
+    end
+
+    def delete_across_lines(start_row, start_col, end_row, end_col)
+      first_part = (@lines[start_row] || "")[0...start_col] || ""
+      last_part = (@lines[end_row] || "")[(end_col + 1)..] || ""
+
+      (end_row - start_row).times { @lines.delete_at(start_row + 1) }
+
+      @lines[start_row] = first_part + last_part
     end
   end
 end

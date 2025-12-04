@@ -68,6 +68,9 @@ module Mui
           handle_open_above
         when "x"
           handle_delete_char
+        when "d"
+          @pending_motion = :d
+          result
         when ":"
           result(mode: Mode::COMMAND)
         when "v"
@@ -83,9 +86,18 @@ module Mui
         char = key_to_char(key)
         return clear_pending unless char
 
-        motion_result = execute_pending_motion(char)
-        apply_motion(motion_result) if motion_result
-        clear_pending
+        case @pending_motion
+        when :d
+          handle_delete_pending(char)
+        when :dg
+          handle_delete_to_file_start(char)
+        when :df, :dF, :dt, :dT
+          handle_delete_find_char(char)
+        else
+          motion_result = execute_pending_motion(char)
+          apply_motion(motion_result) if motion_result
+          clear_pending
+        end
       end
 
       def key_to_char(key)
@@ -192,6 +204,174 @@ module Mui
       def handle_delete_char
         @buffer.delete_char(cursor_row, cursor_col)
         result
+      end
+
+      # Delete operator handlers
+      def handle_delete_pending(char)
+        case char
+        when "d"
+          handle_delete_line
+        when "w"
+          handle_delete_motion(:word_forward)
+        when "e"
+          handle_delete_motion(:word_end)
+        when "b"
+          handle_delete_motion(:word_backward)
+        when "0"
+          handle_delete_to_line_start
+        when "$"
+          handle_delete_to_line_end
+        when "g"
+          @pending_motion = :dg
+          result
+        when "G"
+          handle_delete_to_file_end
+        when "f"
+          @pending_motion = :df
+          result
+        when "F"
+          @pending_motion = :dF
+          result
+        when "t"
+          @pending_motion = :dt
+          result
+        when "T"
+          @pending_motion = :dT
+          result
+        else
+          clear_pending
+        end
+      end
+
+      def handle_delete_line
+        @buffer.delete_line(cursor_row)
+        self.cursor_row = [cursor_row, @buffer.line_count - 1].min
+        @window.clamp_cursor_to_line(@buffer)
+        clear_pending
+      end
+
+      def handle_delete_motion(motion_type)
+        start_pos = { row: cursor_row, col: cursor_col }
+        end_pos = calculate_motion_end(motion_type)
+        return clear_pending unless end_pos
+
+        inclusive = motion_type == :word_end
+        execute_delete(start_pos, end_pos, inclusive: inclusive)
+        clear_pending
+      end
+
+      def handle_delete_to_line_start
+        return clear_pending if cursor_col.zero?
+
+        @buffer.delete_range(cursor_row, 0, cursor_row, cursor_col - 1)
+        self.cursor_col = 0
+        clear_pending
+      end
+
+      def handle_delete_to_line_end
+        line_length = @buffer.line(cursor_row).length
+        return clear_pending if line_length.zero?
+
+        end_col = line_length - 1
+        @buffer.delete_range(cursor_row, cursor_col, cursor_row, end_col)
+        @window.clamp_cursor_to_line(@buffer)
+        clear_pending
+      end
+
+      def handle_delete_to_file_end
+        last_row = @buffer.line_count - 1
+        if cursor_row == last_row
+          handle_delete_line
+        else
+          (last_row - cursor_row + 1).times { @buffer.delete_line(cursor_row) }
+          self.cursor_row = [cursor_row, @buffer.line_count - 1].min
+          @window.clamp_cursor_to_line(@buffer)
+          clear_pending
+        end
+      end
+
+      def handle_delete_to_file_start(char)
+        return clear_pending unless char == "g"
+
+        if cursor_row.zero?
+          handle_delete_to_line_start
+        else
+          cursor_row.times { @buffer.delete_line(0) }
+          @buffer.delete_range(0, 0, 0, cursor_col - 1) if cursor_col.positive?
+          self.cursor_row = 0
+          self.cursor_col = 0
+          clear_pending
+        end
+      end
+
+      def handle_delete_find_char(char)
+        motion_result = case @pending_motion
+                        when :df
+                          Motion.find_char_forward(@buffer, cursor_row, cursor_col, char)
+                        when :dF
+                          Motion.find_char_backward(@buffer, cursor_row, cursor_col, char)
+                        when :dt
+                          Motion.till_char_forward(@buffer, cursor_row, cursor_col, char)
+                        when :dT
+                          Motion.till_char_backward(@buffer, cursor_row, cursor_col, char)
+                        end
+        return clear_pending unless motion_result
+
+        execute_delete_find_char(motion_result)
+        clear_pending
+      end
+
+      def execute_delete_find_char(motion_result)
+        case @pending_motion
+        when :df, :dt
+          @buffer.delete_range(cursor_row, cursor_col, cursor_row, motion_result[:col])
+        when :dF, :dT
+          @buffer.delete_range(cursor_row, motion_result[:col], cursor_row, cursor_col - 1)
+          self.cursor_col = motion_result[:col]
+        end
+        @window.clamp_cursor_to_line(@buffer)
+      end
+
+      def calculate_motion_end(motion_type)
+        case motion_type
+        when :word_forward
+          Motion.word_forward(@buffer, cursor_row, cursor_col)
+        when :word_end
+          Motion.word_end(@buffer, cursor_row, cursor_col)
+        when :word_backward
+          Motion.word_backward(@buffer, cursor_row, cursor_col)
+        end
+      end
+
+      def execute_delete(start_pos, end_pos, inclusive: false)
+        if start_pos[:row] == end_pos[:row]
+          execute_delete_same_line(start_pos, end_pos, inclusive: inclusive)
+        else
+          execute_delete_across_lines(start_pos, end_pos, inclusive: inclusive)
+        end
+      end
+
+      def execute_delete_same_line(start_pos, end_pos, inclusive: false)
+        from_col = [start_pos[:col], end_pos[:col]].min
+        to_col = [start_pos[:col], end_pos[:col]].max
+        to_col -= 1 unless inclusive
+        return if to_col < from_col
+
+        @buffer.delete_range(start_pos[:row], from_col, start_pos[:row], to_col)
+        self.cursor_col = from_col
+        @window.clamp_cursor_to_line(@buffer)
+      end
+
+      def execute_delete_across_lines(start_pos, end_pos, inclusive: false)
+        from_row, to_row = [start_pos[:row], end_pos[:row]].minmax
+        from_col = from_row == start_pos[:row] ? start_pos[:col] : end_pos[:col]
+        to_col = to_row == end_pos[:row] ? end_pos[:col] : start_pos[:col]
+        to_col -= 1 unless inclusive
+
+        @buffer.delete_range(from_row, from_col, to_row, to_col)
+        self.cursor_row = from_row
+        self.cursor_col = from_col
+        @window.clamp_cursor_to_line(@buffer)
       end
 
       def apply_motion(motion_result)

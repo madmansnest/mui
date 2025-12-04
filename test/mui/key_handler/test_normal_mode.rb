@@ -364,4 +364,154 @@ class TestKeyHandlerNormalMode < Minitest::Test
       assert_equal "a", result
     end
   end
+
+  class TestDeleteOperator < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello world"
+      @buffer.insert_line(1, "second line")
+      @buffer.insert_line(2, "third line")
+      @window = Mui::Window.new(@buffer)
+      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer)
+    end
+
+    def test_dd_deletes_current_line
+      @window.cursor_row = 1
+
+      @handler.handle("d")
+      @handler.handle("d")
+
+      assert_equal 2, @buffer.line_count
+      assert_equal "hello world", @buffer.line(0)
+      assert_equal "third line", @buffer.line(1)
+    end
+
+    def test_dd_on_last_line_moves_cursor_up
+      @window.cursor_row = 2
+
+      @handler.handle("d")
+      @handler.handle("d")
+
+      assert_equal 2, @buffer.line_count
+      assert_equal 1, @window.cursor_row
+    end
+
+    def test_dw_deletes_word
+      @window.cursor_col = 0
+
+      @handler.handle("d")
+      @handler.handle("w")
+
+      assert_equal "world", @buffer.line(0)
+      assert_equal 0, @window.cursor_col
+    end
+
+    def test_de_deletes_to_end_of_word
+      @window.cursor_col = 0
+
+      @handler.handle("d")
+      @handler.handle("e")
+
+      assert_equal " world", @buffer.line(0)
+    end
+
+    def test_db_deletes_to_previous_word
+      @window.cursor_col = 8
+
+      @handler.handle("d")
+      @handler.handle("b")
+
+      assert_equal "hello rld", @buffer.line(0)
+    end
+
+    def test_d0_deletes_to_line_start
+      @window.cursor_col = 5
+
+      @handler.handle("d")
+      @handler.handle("0")
+
+      assert_equal " world", @buffer.line(0)
+      assert_equal 0, @window.cursor_col
+    end
+
+    def test_d_dollar_deletes_to_line_end
+      @window.cursor_col = 5
+
+      @handler.handle("d")
+      @handler.handle("$")
+
+      assert_equal "hello", @buffer.line(0)
+    end
+
+    def test_dG_deletes_to_file_end
+      @window.cursor_row = 1
+
+      @handler.handle("d")
+      @handler.handle("G")
+
+      assert_equal 1, @buffer.line_count
+      assert_equal "hello world", @buffer.line(0)
+    end
+
+    def test_dgg_deletes_to_file_start
+      @window.cursor_row = 2
+      @window.cursor_col = 3
+
+      @handler.handle("d")
+      @handler.handle("g")
+      @handler.handle("g")
+
+      assert_equal 1, @buffer.line_count
+      assert_equal "rd line", @buffer.line(0)
+    end
+
+    def test_df_deletes_to_char
+      @window.cursor_col = 0
+
+      @handler.handle("d")
+      @handler.handle("f")
+      @handler.handle("o")
+
+      assert_equal " world", @buffer.line(0)
+    end
+
+    def test_dt_deletes_till_char
+      @window.cursor_col = 0
+
+      @handler.handle("d")
+      @handler.handle("t")
+      @handler.handle("o")
+
+      assert_equal "o world", @buffer.line(0)
+    end
+
+    def test_dF_deletes_backward_to_char
+      @window.cursor_col = 10
+
+      @handler.handle("d")
+      @handler.handle("F")
+      @handler.handle("o")
+
+      assert_equal "hello wd", @buffer.line(0)
+    end
+
+    def test_dT_deletes_backward_till_char
+      @window.cursor_col = 10
+
+      @handler.handle("d")
+      @handler.handle("T")
+      @handler.handle("o")
+
+      assert_equal "hello wod", @buffer.line(0)
+    end
+
+    def test_d_with_invalid_motion_cancels
+      @window.cursor_col = 5
+
+      @handler.handle("d")
+      @handler.handle("z")
+
+      assert_equal "hello world", @buffer.line(0)
+    end
+  end
 end

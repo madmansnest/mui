@@ -283,4 +283,88 @@ class TestE2EVimOperations < Minitest::Test
       .type(":q!<Enter>")
       .assert_running(false)
   end
+
+  def test_dd_delete_line
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("Line 1<Enter>Line 2<Enter>Line 3")
+      .type("<Esc>")
+      .assert_line_count(3)
+
+    runner
+      .type("k") # Move to Line 2
+      .type("dd")
+      .assert_line_count(2)
+      .assert_line(0, "Line 1")
+      .assert_line(1, "Line 3")
+  end
+
+  def test_dw_delete_word
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("hello world foo")
+      .type("<Esc>")
+      .type("0") # Move to start
+
+    runner
+      .type("dw")
+      .assert_line(0, "world foo")
+  end
+
+  def test_d_dollar_delete_to_line_end
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("hello world")
+      .type("<Esc>")
+      .type("0") # Move to start
+      .type("w") # Move to "world"
+      .assert_cursor(0, 6)
+
+    runner
+      .type("d$")
+      .assert_line(0, "hello ")
+  end
+
+  def test_visual_mode_delete
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("hello world")
+      .type("<Esc>")
+      .type("0") # Move to start
+
+    runner
+      .type("v")
+      .assert_mode(Mui::Mode::VISUAL)
+      .type("llll") # Select "hello"
+      .type("d")
+      .assert_mode(Mui::Mode::NORMAL)
+      .assert_line(0, " world")
+  end
+
+  def test_visual_line_mode_delete
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("Line 1<Enter>Line 2<Enter>Line 3")
+      .type("<Esc>")
+      .type("gg") # Move to start
+
+    runner
+      .type("V")
+      .assert_mode(Mui::Mode::VISUAL_LINE)
+      .type("j") # Select 2 lines
+      .type("d")
+      .assert_mode(Mui::Mode::NORMAL)
+      .assert_line_count(1)
+      .assert_line(0, "Line 3")
+  end
 end

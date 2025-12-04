@@ -67,6 +67,8 @@ module Mui
         when "T"
           @pending_motion = :T
           result
+        when "d"
+          handle_delete
         else
           result
         end
@@ -80,6 +82,32 @@ module Mui
       def handle_upper_v_key
         # V in visual mode switches to visual line mode
         result(mode: Mode::VISUAL_LINE, toggle_line_mode: true)
+      end
+
+      def handle_delete
+        range = @selection.normalized_range
+        if @selection.line_mode
+          delete_lines(range)
+        else
+          delete_range(range)
+        end
+        result(mode: Mode::NORMAL, clear_selection: true)
+      end
+
+      def delete_lines(range)
+        (range[:end_row] - range[:start_row] + 1).times do
+          @buffer.delete_line(range[:start_row])
+        end
+        self.cursor_row = [range[:start_row], @buffer.line_count - 1].min
+        self.cursor_col = 0
+        @window.clamp_cursor_to_line(@buffer)
+      end
+
+      def delete_range(range)
+        @buffer.delete_range(range[:start_row], range[:start_col], range[:end_row], range[:end_col])
+        self.cursor_row = range[:start_row]
+        self.cursor_col = range[:start_col]
+        @window.clamp_cursor_to_line(@buffer)
       end
 
       def handle_pending_motion(key)
