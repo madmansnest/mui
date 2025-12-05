@@ -5,13 +5,17 @@ module Mui
   class Editor
     attr_reader :buffer, :window, :message, :running, :undo_manager
 
-    def initialize(file_path = nil, adapter: TerminalAdapter::Curses.new)
+    def initialize(file_path = nil, adapter: TerminalAdapter::Curses.new, load_config: true)
+      Mui.load_config if load_config
+
       @adapter = adapter
-      @screen = Screen.new(adapter: @adapter)
+      @color_manager = ColorManager.new
+      @color_scheme = load_color_scheme
+      @screen = Screen.new(adapter: @adapter, color_manager: @color_manager)
       @input = Input.new(adapter: @adapter)
       @buffer = Buffer.new
       @buffer.load(file_path) if file_path
-      @window = Window.new(@buffer, width: @screen.width, height: @screen.height)
+      @window = Window.new(@buffer, width: @screen.width, height: @screen.height, color_scheme: @color_scheme)
       @command_line = CommandLine.new
       @message = nil
       @running = true
@@ -95,6 +99,13 @@ module Mui
       @mode_manager.transition(result)
       @message = result.message if result.message
       @running = false if result.quit?
+    end
+
+    def load_color_scheme
+      scheme_name = Mui.config.get(:colorscheme)
+      Themes.send(scheme_name.to_sym)
+    rescue NoMethodError
+      Themes.mui
     end
   end
 end

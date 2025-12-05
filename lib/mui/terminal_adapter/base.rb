@@ -49,6 +49,21 @@ module Mui
         raise MethodNotOverriddenError, __method__
       end
 
+      # Initialize color support
+      def init_colors
+        raise MethodNotOverriddenError, __method__
+      end
+
+      # Initialize a color pair
+      def init_color_pair(_pair_index, _fg, _bg)
+        raise MethodNotOverriddenError, __method__
+      end
+
+      # Execute block with specified color and attributes
+      def with_color(_pair_index, bold: false, underline: false)
+        raise MethodNotOverriddenError, __method__
+      end
+
       # Read single key (blocking)
       def getch
         raise MethodNotOverriddenError, __method__
