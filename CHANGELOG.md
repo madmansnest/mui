@@ -1,6 +1,15 @@
 ## [Unreleased]
 
 ### Added
+- Configuration file support:
+  - `~/.muirc` for global settings
+  - `.lmuirc` for local (per-project) settings
+  - Local settings override global settings
+  - Ruby DSL format: `Mui.set :colorscheme, "theme_name"`
+- Color scheme system:
+  - 256-color terminal support
+  - Built-in themes: `mui` (default), `solarized_dark`, `solarized_light`, `monokai`, `nord`, `gruvbox_dark`, `dracula`, `tokyo_night`
+  - Customizable UI elements: normal text, status line, search highlight, visual selection, line numbers, messages
 - Search functionality:
   - `/` to search forward (supports regular expressions)
   - `?` to search backward (supports regular expressions)

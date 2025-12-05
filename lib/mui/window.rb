@@ -5,7 +5,7 @@ module Mui
     attr_reader :buffer
     attr_accessor :x, :y, :width, :height, :cursor_row, :cursor_col, :scroll_row, :scroll_col
 
-    def initialize(buffer, x: 0, y: 0, width: 80, height: 24)
+    def initialize(buffer, x: 0, y: 0, width: 80, height: 24, color_scheme: nil)
       @buffer = buffer
       @x = x
       @y = y
@@ -15,6 +15,7 @@ module Mui
       @cursor_col = 0
       @scroll_row = 0
       @scroll_col = 0
+      @color_scheme = color_scheme
     end
 
     def visible_height
@@ -64,7 +65,7 @@ module Mui
       elsif search_state&.has_pattern?
         render_line_with_search_highlight(screen, row, screen_row, padded_line, search_state)
       else
-        screen.put(@y + screen_row, @x, padded_line)
+        put_normal_text(screen, @y + screen_row, @x, padded_line)
       end
     end
 
@@ -80,15 +81,15 @@ module Mui
 
     def render_visual_line_mode_selection(screen, row, screen_row, padded_line, range)
       if row.between?(range[:start_row], range[:end_row])
-        screen.put_with_highlight(@y + screen_row, @x, padded_line)
+        put_visual_highlight(screen, @y + screen_row, @x, padded_line)
       else
-        screen.put(@y + screen_row, @x, padded_line)
+        put_normal_text(screen, @y + screen_row, @x, padded_line)
       end
     end
 
     def render_visual_mode_selection(screen, row, screen_row, padded_line, range)
       if row < range[:start_row] || row > range[:end_row]
-        screen.put(@y + screen_row, @x, padded_line)
+        put_normal_text(screen, @y + screen_row, @x, padded_line)
         return
       end
 
@@ -103,19 +104,19 @@ module Mui
     end
 
     def render_line_segments(screen, screen_row, padded_line, start_col, end_col)
-      screen.put(@y + screen_row, @x, padded_line[0, start_col]) if start_col.positive?
-      screen.put_with_highlight(@y + screen_row, @x + start_col, padded_line[start_col..end_col])
+      put_normal_text(screen, @y + screen_row, @x, padded_line[0, start_col]) if start_col.positive?
+      put_visual_highlight(screen, @y + screen_row, @x + start_col, padded_line[start_col..end_col])
       remaining_start = end_col + 1
       return unless remaining_start < padded_line.length
 
-      screen.put(@y + screen_row, @x + remaining_start,
-                 padded_line[remaining_start..])
+      put_normal_text(screen, @y + screen_row, @x + remaining_start,
+                      padded_line[remaining_start..])
     end
 
     def render_line_with_search_highlight(screen, row, screen_row, padded_line, search_state)
       matches = search_state.matches_for_row(row)
       if matches.empty?
-        screen.put(@y + screen_row, @x, padded_line)
+        put_normal_text(screen, @y + screen_row, @x, padded_line)
         return
       end
 
@@ -137,17 +138,17 @@ module Mui
         end_col = [end_col, padded_line.length - 1].min
 
         # Render text before this match
-        screen.put(@y + screen_row, @x + current_pos, padded_line[current_pos...start_col]) if current_pos < start_col
+        put_normal_text(screen, @y + screen_row, @x + current_pos, padded_line[current_pos...start_col]) if current_pos < start_col
 
         # Render the highlighted match
-        screen.put_with_highlight(@y + screen_row, @x + start_col, padded_line[start_col..end_col])
+        put_search_highlight(screen, @y + screen_row, @x + start_col, padded_line[start_col..end_col])
         current_pos = end_col + 1
       end
 
       # Render remaining text after all matches
       return unless current_pos < padded_line.length
 
-      screen.put(@y + screen_row, @x + current_pos, padded_line[current_pos..])
+      put_normal_text(screen, @y + screen_row, @x + current_pos, padded_line[current_pos..])
     end
 
     def render_status_line(screen)
@@ -157,7 +158,13 @@ module Mui
       padding = @width - status.length - position.length
       padding = 0 if padding.negative?
       full_status = status + (" " * padding) + position
-      screen.put(@y + visible_height, @x, full_status[0, @width])
+      full_status = full_status[0, @width]
+
+      if @color_scheme
+        screen.put_with_style(@y + visible_height, @x, full_status, @color_scheme[:status_line])
+      else
+        screen.put(@y + visible_height, @x, full_status)
+      end
     end
 
     def screen_cursor_x
@@ -200,6 +207,30 @@ module Mui
 
     def clamp_cursor_col
       @cursor_col = max_cursor_col if @cursor_col > max_cursor_col
+    end
+
+    def put_visual_highlight(screen, y, x, text)
+      if @color_scheme
+        screen.put_with_style(y, x, text, @color_scheme[:visual_selection])
+      else
+        screen.put_with_highlight(y, x, text)
+      end
+    end
+
+    def put_search_highlight(screen, y, x, text)
+      if @color_scheme
+        screen.put_with_style(y, x, text, @color_scheme[:search_highlight])
+      else
+        screen.put_with_highlight(y, x, text)
+      end
+    end
+
+    def put_normal_text(screen, y, x, text)
+      if @color_scheme
+        screen.put_with_style(y, x, text, @color_scheme[:normal])
+      else
+        screen.put(y, x, text)
+      end
     end
   end
 end
