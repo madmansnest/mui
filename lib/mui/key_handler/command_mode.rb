@@ -54,14 +54,6 @@ module Mui
         result
       end
 
-      def extract_printable_char(key)
-        if key.is_a?(String)
-          key
-        elsif key.is_a?(Integer) && key >= KeyCode::PRINTABLE_MIN && key < KeyCode::PRINTABLE_MAX
-          key.chr
-        end
-      end
-
       def execute_action(command_result)
         case command_result[:action]
         when :write
