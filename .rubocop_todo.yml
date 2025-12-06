@@ -34,22 +34,9 @@ Lint/MissingSuper:
 Lint/UnusedMethodArgument:
   Exclude:
     - 'lib/mui/terminal_adapter/base.rb'
-
-# Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes.
-Metrics/AbcSize:
-  Max: 53
-
-# Configuration parameters: CountComments, CountAsOne.
-Metrics/ClassLength:
-  Max: 853
-
 # Configuration parameters: AllowedMethods, AllowedPatterns.
 Metrics/CyclomaticComplexity:
   Max: 37
-
-# Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
-Metrics/MethodLength:
-  Max: 85
 
 # Configuration parameters: CountKeywordArgs, MaxOptionalParameters.
 Metrics/ParameterLists:
@@ -151,8 +138,3 @@ Style/TrivialAccessors:
   Exclude:
     - 'test/mui/test_autocmd.rb'
 
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowHeredoc, AllowURI, AllowQualifiedName, URISchemes, IgnoreCopDirectives, AllowedPatterns, SplitStrings.
-# URISchemes: http, https
-Layout/LineLength:
-  Max: 182
