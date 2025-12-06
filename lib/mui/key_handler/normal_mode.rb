@@ -171,27 +171,6 @@ module Mui
         end
       end
 
-      def key_to_char(key)
-        key.is_a?(String) ? key : key.chr
-      rescue RangeError
-        nil
-      end
-
-      def execute_pending_motion(char)
-        case @pending_motion
-        when :g
-          char == "g" ? Motion.file_start(@buffer, cursor_row, cursor_col) : nil
-        when :f
-          Motion.find_char_forward(@buffer, cursor_row, cursor_col, char)
-        when :F
-          Motion.find_char_backward(@buffer, cursor_row, cursor_col, char)
-        when :t
-          Motion.till_char_forward(@buffer, cursor_row, cursor_col, char)
-        when :T
-          Motion.till_char_backward(@buffer, cursor_row, cursor_col, char)
-        end
-      end
-
       def clear_pending
         @pending_motion = nil
         @pending_register = nil
