@@ -12,6 +12,8 @@ module Mui
       scheme.define :line_number, fg: :cyan, bg: :darkgray
       scheme.define :message_error, fg: :red, bg: :darkgray, bold: true
       scheme.define :message_info, fg: :cyan, bg: :darkgray
+      scheme.define :separator, fg: :white, bg: :blue
+      scheme.define :command_line, fg: :white, bg: :darkgray
       scheme
     end
 
@@ -25,6 +27,8 @@ module Mui
       scheme.define :line_number, fg: :solarized_base01, bg: :solarized_base03
       scheme.define :message_error, fg: :solarized_red, bg: :solarized_base03, bold: true
       scheme.define :message_info, fg: :solarized_cyan, bg: :solarized_base03
+      scheme.define :separator, fg: :solarized_base1, bg: :solarized_base02
+      scheme.define :command_line, fg: :solarized_base0, bg: :solarized_base03
       scheme
     end
 
@@ -38,6 +42,8 @@ module Mui
       scheme.define :line_number, fg: :solarized_base1, bg: :solarized_base3
       scheme.define :message_error, fg: :solarized_red, bg: :solarized_base3, bold: true
       scheme.define :message_info, fg: :solarized_cyan, bg: :solarized_base3
+      scheme.define :separator, fg: :solarized_base01, bg: :solarized_base2
+      scheme.define :command_line, fg: :solarized_base00, bg: :solarized_base3
       scheme
     end
 
@@ -51,6 +57,8 @@ module Mui
       scheme.define :line_number, fg: :monokai_cyan, bg: :monokai_bg
       scheme.define :message_error, fg: :monokai_pink, bg: :monokai_bg, bold: true
       scheme.define :message_info, fg: :monokai_green, bg: :monokai_bg
+      scheme.define :separator, fg: :monokai_fg, bg: :monokai_purple
+      scheme.define :command_line, fg: :monokai_fg, bg: :monokai_bg
       scheme
     end
 
@@ -64,6 +72,8 @@ module Mui
       scheme.define :line_number, fg: :nord_polar3, bg: :nord_polar0
       scheme.define :message_error, fg: :nord_aurora_red, bg: :nord_polar0, bold: true
       scheme.define :message_info, fg: :nord_frost1, bg: :nord_polar0
+      scheme.define :separator, fg: :nord_snow0, bg: :nord_polar2
+      scheme.define :command_line, fg: :nord_snow0, bg: :nord_polar0
       scheme
     end
 
@@ -77,6 +87,8 @@ module Mui
       scheme.define :line_number, fg: :gruvbox_gray, bg: :gruvbox_bg
       scheme.define :message_error, fg: :gruvbox_red, bg: :gruvbox_bg, bold: true
       scheme.define :message_info, fg: :gruvbox_aqua, bg: :gruvbox_bg
+      scheme.define :separator, fg: :gruvbox_fg, bg: :gruvbox_gray
+      scheme.define :command_line, fg: :gruvbox_fg, bg: :gruvbox_bg
       scheme
     end
 
@@ -90,6 +102,8 @@ module Mui
       scheme.define :line_number, fg: :dracula_comment, bg: :dracula_bg
       scheme.define :message_error, fg: :dracula_red, bg: :dracula_bg, bold: true
       scheme.define :message_info, fg: :dracula_cyan, bg: :dracula_bg
+      scheme.define :separator, fg: :dracula_fg, bg: :dracula_selection
+      scheme.define :command_line, fg: :dracula_fg, bg: :dracula_bg
       scheme
     end
 
@@ -103,6 +117,8 @@ module Mui
       scheme.define :line_number, fg: :tokyo_comment, bg: :tokyo_bg
       scheme.define :message_error, fg: :tokyo_red, bg: :tokyo_bg, bold: true
       scheme.define :message_info, fg: :tokyo_cyan, bg: :tokyo_bg
+      scheme.define :separator, fg: :tokyo_fg, bg: :tokyo_comment
+      scheme.define :command_line, fg: :tokyo_fg, bg: :tokyo_bg
       scheme
     end
   end

@@ -25,8 +25,8 @@ module Mui
         # @param char [String] the character input
         # @param pending_register [String, nil] the register name
         # @return [Symbol] result status (:done, :insert_mode, :pending_*, or :cancel)
-        def handle_pending(char, pending_register: nil)
-          raise NotImplementedError, "Subclasses must implement #handle_pending"
+        def handle_pending(_char, pending_register: nil) # rubocop:disable Lint/UnusedMethodArgument
+          raise Mui::MethodNotOverriddenError, :handle_pending
         end
 
         protected

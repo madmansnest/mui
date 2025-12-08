@@ -48,6 +48,18 @@ module Mui
         { action: :force_quit }
       when /^w\s+(.+)/
         { action: :write_as, path: ::Regexp.last_match(1) }
+      when "sp", "split"
+        { action: :split_horizontal }
+      when /^sp\s+(.+)/, /^split\s+(.+)/
+        { action: :split_horizontal, path: ::Regexp.last_match(1) }
+      when "vs", "vsplit"
+        { action: :split_vertical }
+      when /^vs\s+(.+)/, /^vsplit\s+(.+)/
+        { action: :split_vertical, path: ::Regexp.last_match(1) }
+      when "close"
+        { action: :close_window }
+      when "only"
+        { action: :only_window }
       else
         { action: :unknown, command: cmd }
       end

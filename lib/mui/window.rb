@@ -2,8 +2,8 @@
 
 module Mui
   class Window
-    attr_reader :buffer
     attr_accessor :x, :y, :width, :height, :cursor_row, :cursor_col, :scroll_row, :scroll_col
+    attr_reader :buffer
 
     def initialize(buffer, x: 0, y: 0, width: 80, height: 24, color_scheme: nil)
       @buffer = buffer
@@ -20,8 +20,17 @@ module Mui
       @status_line_renderer = StatusLineRenderer.new(buffer, self, color_scheme)
     end
 
+    def buffer=(new_buffer)
+      @buffer = new_buffer
+      @cursor_row = 0
+      @cursor_col = 0
+      @scroll_row = 0
+      @scroll_col = 0
+      @status_line_renderer = StatusLineRenderer.new(new_buffer, self, @color_scheme)
+    end
+
     def visible_height
-      @height - 2 # Status line and command line
+      @height - 1 # Status line only (command line is shared by all windows)
     end
 
     def visible_width

@@ -270,8 +270,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
         @command_line.input(path)
         result = @handler.handle(13)
 
-        assert_match(/File opened/, result.message)
-        assert_equal "hello", @buffer.lines[0]
+        assert_match(/opened/, result.message)
+        assert_equal "hello", @window.buffer.lines[0]
       end
     end
   end
@@ -294,8 +294,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
         @command_line.input(path)
         result = @handler.handle(13)
 
-        assert_match(/File opened/, result.message)
-        assert_equal path, @buffer.name
+        assert_match(/opened/, result.message)
+        assert_equal path, @window.buffer.name
       end
     end
   end

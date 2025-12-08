@@ -3,7 +3,7 @@
 module Mui
   # Main editor class that coordinates all components
   class Editor
-    attr_reader :buffer, :window_manager, :undo_manager, :autocmd, :command_registry
+    attr_reader :window_manager, :undo_manager, :autocmd, :command_registry
     attr_accessor :message, :running
 
     def initialize(file_path = nil, adapter: TerminalAdapter::Curses.new, load_config: true)
@@ -53,6 +53,10 @@ module Mui
       @window_manager.active_window
     end
 
+    def buffer
+      window.buffer
+    end
+
     def mode
       @mode_manager.mode
     end
@@ -99,7 +103,7 @@ module Mui
     end
 
     def render_status_area
-      status_line = case @mode_manager.mode
+      status_text = case @mode_manager.mode
                     when Mode::COMMAND
                       @command_line.to_s
                     when Mode::INSERT
@@ -113,7 +117,10 @@ module Mui
                     else
                       @message || "-- NORMAL --"
                     end
-      @screen.put(@screen.height - 1, 0, status_line)
+
+      status_line = status_text.ljust(@screen.width)
+      style = @color_scheme[:command_line]
+      @screen.put_with_style(@screen.height - 1, 0, status_line, style)
     end
 
     def apply_result(result)

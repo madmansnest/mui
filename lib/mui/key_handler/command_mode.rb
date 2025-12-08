@@ -59,7 +59,7 @@ module Mui
         when :open
           handle_open
         when :open_as
-          handle_open_as(command_result[:path])
+          open_buffer(command_result[:path])
         when :write
           handle_write
         when :quit
@@ -69,7 +69,15 @@ module Mui
         when :force_quit
           handle_force_quit
         when :write_as
-          handle_write_as(command_result[:path])
+          save_buffer(command_result[:path])
+        when :split_horizontal
+          handle_split_horizontal(command_result[:path])
+        when :split_vertical
+          handle_split_vertical(command_result[:path])
+        when :close_window
+          handle_close_window
+        when :only_window
+          handle_only_window
         when :unknown
           # Check plugin commands before reporting unknown
           plugin_result = try_plugin_command(command_result[:command])
@@ -91,7 +99,7 @@ module Mui
 
         context = CommandContext.new(
           editor: @mode_manager.editor,
-          buffer: @buffer,
+          buffer:,
           window:
         )
         plugin_command.call(context, args)
@@ -107,55 +115,121 @@ module Mui
       end
 
       def handle_quit
-        if @buffer.modified
-          result(message: "No write since last change (add ! to override)")
-        else
-          result(quit: true)
-        end
+        return result(message: "No write since last change (add ! to override)") if buffer.modified
+
+        close_or_quit
       end
 
       def handle_write_quit
         save_result = save_buffer
-        if save_result.message && !save_result.message.include?("written")
-          save_result
-        else
-          result(message: save_result.message, quit: true)
-        end
+        return save_result if save_result.message && !save_result.message.include?("written")
+
+        close_or_quit(message: save_result.message)
       end
 
       def handle_force_quit
-        result(quit: true)
+        close_or_quit
       end
 
-      def handle_open_as(path)
-        open_buffer(path)
-      end
+      def close_or_quit(message: nil)
+        with_window_manager do |wm|
+          return result(message:, quit: true) if wm.single_window?
 
-      def handle_write_as(path)
-        save_buffer(path)
+          wm.close_current_window
+          return result(message:)
+        end
+        result(message:, quit: true)
       end
 
       def open_buffer(path = nil)
-        target_path = path || @buffer.name
+        if path
+          open_new_buffer(path)
+        else
+          reload_current_buffer
+        end
+      end
+
+      def open_new_buffer(path)
+        new_buffer = create_buffer_from_path(path)
+        window.buffer = new_buffer
+        result(message: "\"#{path}\" opened")
+      rescue SystemCallError => e
+        result(message: "Error: #{e.message}")
+      end
+
+      def reload_current_buffer
+        target_path = buffer.name
         return result(message: "No file name") if target_path.nil? || target_path == "[No Name]"
 
-        @buffer.load(target_path)
-        result(message: path ? "File opened" : "File reopened")
+        buffer.load(target_path)
+        result(message: "File reopened")
       rescue SystemCallError => e
         result(message: "Error: #{e.message}")
       end
 
       def save_buffer(path = nil)
         if path
-          @buffer.save(path)
-        elsif @buffer.name == "[No Name]"
+          buffer.save(path)
+        elsif buffer.name == "[No Name]"
           return result(message: "No file name")
         else
-          @buffer.save
+          buffer.save
         end
-        result(message: "\"#{@buffer.name}\" written")
+        result(message: "\"#{buffer.name}\" written")
       rescue SystemCallError => e
         result(message: "Error: #{e.message}")
+      end
+
+      def handle_split_horizontal(path = nil)
+        with_window_manager do |wm|
+          buffer = path ? create_buffer_from_path(path) : nil
+          wm.split_horizontal(buffer)
+          result
+        end
+      end
+
+      def handle_split_vertical(path = nil)
+        with_window_manager do |wm|
+          buffer = path ? create_buffer_from_path(path) : nil
+          wm.split_vertical(buffer)
+          result
+        end
+      end
+
+      def handle_close_window
+        with_window_manager do |wm|
+          if wm.single_window?
+            result(message: "Cannot close last window")
+          else
+            wm.close_current_window
+            result
+          end
+        end
+      end
+
+      def handle_only_window
+        with_window_manager do |wm|
+          wm.close_all_except_current
+          result
+        end
+      end
+
+      def with_window_manager
+        wm = @mode_manager&.window_manager
+        return result(message: "Window commands not available") unless wm
+
+        yield wm
+      end
+
+      def create_buffer_from_path(path)
+        new_buffer = Buffer.new
+        new_buffer.load(path)
+        new_buffer
+      rescue SystemCallError
+        # File doesn't exist yet, create new buffer with the name
+        new_buffer = Buffer.new
+        new_buffer.name = path
+        new_buffer
       end
 
       def result(mode: nil, message: nil, quit: false)

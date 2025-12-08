@@ -2,8 +2,8 @@
 
 module Mui
   class Buffer
-    attr_reader :lines, :name
-    attr_accessor :modified, :undo_manager
+    attr_reader :lines
+    attr_accessor :name, :modified, :undo_manager
 
     # Alias for autocmd pattern matching
     alias file_path name

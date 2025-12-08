@@ -3,7 +3,7 @@
 module Mui
   # Manages editor mode state and transitions
   class ModeManager
-    attr_reader :mode, :selection, :register, :undo_manager, :search_state, :search_input, :editor
+    attr_reader :mode, :selection, :register, :undo_manager, :search_state, :search_input, :editor, :window_manager
 
     def initialize(window:, buffer:, command_line:, undo_manager: nil, editor: nil)
       @window_manager = window.is_a?(WindowManager) ? window : nil

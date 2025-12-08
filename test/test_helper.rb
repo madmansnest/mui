@@ -127,11 +127,12 @@ end
 
 # Mock ModeManager for KeyHandler unit tests
 class MockModeManager
-  attr_accessor :active_window, :editor
+  attr_accessor :active_window, :editor, :window_manager
 
   def initialize(window)
     @active_window = window
     @editor = nil
+    @window_manager = nil
   end
 end
 
@@ -206,6 +207,8 @@ module MuiTestHelper
       Curses::KEY_DOWN
     when "c-r"
       18 # Ctrl-r
+    when "c-w"
+      23 # Ctrl-w
     else
       raise "Unknown special key: <#{name}>"
     end
@@ -221,7 +224,7 @@ end
 module Mui
   class Editor
     attr_accessor :running
-    attr_reader :buffer, :window_manager, :command_line, :message, :screen, :input, :mode_manager
+    attr_reader :window_manager, :command_line, :message, :screen, :input, :mode_manager
     public :handle_key
 
     # Setter for test compatibility
