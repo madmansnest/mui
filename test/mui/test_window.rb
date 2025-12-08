@@ -31,11 +31,12 @@ class TestWindow < Minitest::Test
   end
 
   class TestVisibleHeight < Minitest::Test
-    def test_returns_height_minus_status_and_command_lines
+    def test_returns_height_minus_status_line
       buffer = Mui::Buffer.new
       window = Mui::Window.new(buffer, width: 80, height: 24)
 
-      assert_equal 22, window.visible_height
+      # height 24 - status line 1 = 23 (command line is shared, not per-window)
+      assert_equal 23, window.visible_height
     end
   end
 
@@ -199,7 +200,8 @@ class TestWindow < Minitest::Test
 
       @window.ensure_cursor_visible
 
-      assert_equal 3, @window.scroll_row
+      # visible_height = 24 - 1 = 23, cursor at 24 means scroll_row = 24 - 23 + 1 = 2
+      assert_equal 2, @window.scroll_row
     end
 
     def test_scrolls_up_when_cursor_above_visible

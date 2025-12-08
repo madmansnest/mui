@@ -195,7 +195,7 @@ class TestE2EFileEditing < Minitest::Test
         runner
           .assert_line(0, "First file")
           .type(":e #{f2.path}<Enter>")
-          .assert_message_contains("File opened")
+          .assert_message_contains("opened")
           .assert_line(0, "Second file")
       end
     end
@@ -210,7 +210,7 @@ class TestE2EFileEditing < Minitest::Test
 
       runner
         .type(":e #{new_file_path}<Enter>")
-        .assert_message_contains("File opened")
+        .assert_message_contains("opened")
         .type("i")
         .type("New content")
         .type("<Esc>")

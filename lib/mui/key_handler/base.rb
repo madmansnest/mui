@@ -8,7 +8,6 @@ module Mui
 
     # Base class for mode-specific key handlers
     class Base
-      attr_reader :buffer
       attr_accessor :mode_manager
 
       def initialize(mode_manager, buffer)
@@ -18,6 +17,10 @@ module Mui
 
       def window
         @mode_manager&.active_window
+      end
+
+      def buffer
+        window&.buffer || @buffer
       end
 
       # Handle a key input

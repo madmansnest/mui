@@ -167,6 +167,13 @@ class ScriptRunner
     self
   end
 
+  def assert_window_count(expected)
+    actual = @editor.window_manager.window_count
+    raise "Expected #{expected} windows, got #{actual}" unless actual == expected
+
+    self
+  end
+
   # Get execution log as string
   def format_log
     @log.map.with_index do |entry, i|

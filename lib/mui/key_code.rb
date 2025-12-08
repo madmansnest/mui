@@ -11,5 +11,16 @@ module Mui
     # Extended to support Unicode characters (including CJK)
     # 0x10FFFF is the maximum valid Unicode code point
     PRINTABLE_MAX = 0x10FFFF
+
+    # Control key codes (Ctrl+letter)
+    CTRL_C = 3
+    CTRL_H = 8   # Also backspace in some terminals
+    CTRL_J = 10  # Also newline
+    CTRL_K = 11
+    CTRL_L = 12
+    CTRL_O = 15
+    CTRL_S = 19
+    CTRL_V = 22
+    CTRL_W = 23
   end
 end

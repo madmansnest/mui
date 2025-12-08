@@ -63,7 +63,7 @@ module Mui
       def handle_backspace
         if cursor_col.positive?
           self.cursor_col = cursor_col - 1
-          @buffer.delete_char(cursor_row, cursor_col)
+          buffer.delete_char(cursor_row, cursor_col)
         elsif cursor_row.positive?
           join_with_previous_line
         end
@@ -71,14 +71,14 @@ module Mui
       end
 
       def join_with_previous_line
-        prev_line_len = @buffer.line(cursor_row - 1).length
-        @buffer.join_lines(cursor_row - 1)
+        prev_line_len = buffer.line(cursor_row - 1).length
+        buffer.join_lines(cursor_row - 1)
         self.cursor_row = cursor_row - 1
         self.cursor_col = prev_line_len
       end
 
       def handle_enter
-        @buffer.split_line(cursor_row, cursor_col)
+        buffer.split_line(cursor_row, cursor_col)
         self.cursor_row = cursor_row + 1
         self.cursor_col = 0
         result
@@ -87,7 +87,7 @@ module Mui
       def handle_character_input(key)
         char = extract_printable_char(key)
         if char
-          @buffer.insert_char(cursor_row, cursor_col, char)
+          buffer.insert_char(cursor_row, cursor_col, char)
           self.cursor_col = cursor_col + 1
         end
         result

@@ -1,6 +1,19 @@
 ## [Unreleased]
 
 ### Added
+- Window split functionality:
+  - `:sp` / `:split` to split window horizontally (top/bottom)
+  - `:vs` / `:vsplit` to split window vertically (left/right)
+  - `:sp <filename>` / `:vs <filename>` to split and open file
+  - `Ctrl-w h/j/k/l` to navigate between split windows
+  - `Ctrl-w w` to cycle to next window
+  - `Ctrl-w c` / `:close` to close current window
+  - `Ctrl-w o` / `:only` to close all windows except current
+  - `:q` / `:wq` / `:q!` in split window closes only that window (Vim-compatible)
+  - `:e <filename>` opens file in current window only (doesn't affect other split windows)
+  - Separator lines between windows with configurable colors
+  - Command line area with configurable background color (no terminal transparency)
+  - Each window has independent cursor position, scroll state, and buffer
 - Japanese and multibyte character input support:
   - Full UTF-8 input handling in Insert mode via IME
   - Proper display width calculation for CJK characters (East Asian Width)

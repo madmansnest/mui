@@ -13,6 +13,7 @@ module Mui
         @search_state = search_state
         @pending_motion = nil
         @pending_register = nil
+        @window_command = nil
         initialize_operators
       end
 
@@ -154,12 +155,18 @@ module Mui
           handle_search_next
         when "N"
           handle_search_previous
+        when KeyCode::CTRL_W
+          @pending_motion = :window_command
+          result
         else
           result
         end
       end
 
       def handle_pending_motion(key)
+        # Window command doesn't need char conversion
+        return dispatch_window_command(key) if @pending_motion == :window_command
+
         char = key_to_char(key)
         return clear_pending unless char
 
@@ -364,6 +371,19 @@ module Mui
         else
           result(message: "Already at newest change")
         end
+      end
+
+      # Window command dispatcher
+      def dispatch_window_command(key)
+        window_manager = @mode_manager&.window_manager
+        unless window_manager
+          @pending_motion = nil
+          return result(message: "Window commands not available")
+        end
+
+        @window_command ||= WindowCommand.new(window_manager)
+        @window_command.handle(key)
+        clear_pending
       end
 
       # Search handlers
