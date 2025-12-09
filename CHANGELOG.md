@@ -1,6 +1,15 @@
 ## [Unreleased]
 
 ### Added
+- Syntax highlighting for Ruby and C:
+  - Token-based lexer architecture with extensible base class
+  - Ruby lexer with support for: keywords, strings, comments, numbers, symbols, constants, instance variables (`@foo`, `@@bar`), global variables (`$stdout`), method calls (`.to_i`, `.each`)
+  - C lexer with support for: keywords, strings, char literals, comments, numbers, preprocessor directives
+  - Multiline comment support: Ruby `=begin`/`=end`, C `/* */`
+  - Line-based token caching for performance
+  - Language auto-detection from file extension
+  - Syntax colors defined for all 8 built-in themes
+  - Configurable via `set :syntax, true/false` in `.muirc`
 - Tab page functionality (Vim-compatible):
   - Tab > Window hierarchy: each tab contains independent window layout
   - `:tabnew` / `:tabe` / `:tabedit` to create new tab

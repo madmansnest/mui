@@ -6,7 +6,8 @@ module Mui
 
     def initialize
       @options = {
-        colorscheme: "mui"
+        colorscheme: "mui",
+        syntax: true # Enable/disable syntax highlighting
       }
       @plugins = []
       @keymaps = {}

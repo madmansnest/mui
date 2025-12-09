@@ -3,9 +3,9 @@
 module Mui
   module Highlighters
     class Base
-      PRIORITY_SELECTION = 100
-      PRIORITY_SEARCH = 200
-      PRIORITY_SYNTAX = 300
+      PRIORITY_SYNTAX = 100
+      PRIORITY_SELECTION = 200
+      PRIORITY_SEARCH = 300
 
       def initialize(color_scheme)
         @color_scheme = color_scheme

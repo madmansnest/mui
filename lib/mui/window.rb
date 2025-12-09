@@ -16,6 +16,7 @@ module Mui
       @scroll_row = 0
       @scroll_col = 0
       @color_scheme = color_scheme
+      @syntax_highlighter = Highlighters::SyntaxHighlighter.new(color_scheme, buffer:)
       @line_renderer = create_line_renderer
       @status_line_renderer = StatusLineRenderer.new(buffer, self, color_scheme)
     end
@@ -26,6 +27,7 @@ module Mui
       @cursor_col = 0
       @scroll_row = 0
       @scroll_col = 0
+      @syntax_highlighter.buffer = new_buffer
       @status_line_renderer = StatusLineRenderer.new(new_buffer, self, @color_scheme)
     end
 
@@ -109,6 +111,7 @@ module Mui
 
     def create_line_renderer
       renderer = LineRenderer.new(@color_scheme)
+      renderer.add_highlighter(@syntax_highlighter)
       renderer.add_highlighter(Highlighters::SelectionHighlighter.new(@color_scheme))
       renderer.add_highlighter(Highlighters::SearchHighlighter.new(@color_scheme))
       renderer
@@ -121,7 +124,7 @@ module Mui
     end
 
     def build_render_options(selection, search_state)
-      { selection:, search_state:, scroll_col: @scroll_col }
+      { selection:, search_state:, scroll_col: @scroll_col, buffer: @buffer }
     end
 
     def adjust_options_for_scroll(options)
