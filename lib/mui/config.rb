@@ -7,7 +7,11 @@ module Mui
     def initialize
       @options = {
         colorscheme: "mui",
-        syntax: true # Enable/disable syntax highlighting
+        syntax: true, # Enable/disable syntax highlighting
+        shiftwidth: 2, # Indent width for > and < commands
+        expandtab: true, # Use spaces instead of tabs
+        tabstop: 8, # Tab display width
+        reselect_after_indent: false # Keep selection after > / < in visual mode
       }
       @plugins = []
       @keymaps = {}

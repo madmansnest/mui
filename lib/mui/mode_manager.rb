@@ -3,7 +3,8 @@
 module Mui
   # Manages editor mode state and transitions
   class ModeManager
-    attr_reader :mode, :selection, :register, :undo_manager, :search_state, :search_input, :editor
+    attr_reader :mode, :selection, :register, :undo_manager, :search_state, :search_input, :editor,
+                :last_visual_selection
 
     def initialize(window:, buffer:, command_line:, undo_manager: nil, editor: nil)
       @tab_manager = window.is_a?(TabManager) ? window : nil
@@ -19,6 +20,7 @@ module Mui
       @mode = Mode::NORMAL
       @selection = nil
       @visual_handler = nil
+      @last_visual_selection = nil
 
       initialize_key_handlers
     end
@@ -64,6 +66,31 @@ module Mui
 
     alias window active_window
 
+    def restore_visual_selection
+      return unless @last_visual_selection
+
+      line_mode = @last_visual_selection[:line_mode]
+      @mode = line_mode ? Mode::VISUAL_LINE : Mode::VISUAL
+      @selection = Selection.new(
+        @last_visual_selection[:start_row],
+        @last_visual_selection[:start_col],
+        line_mode:
+      )
+      @selection.update_end(
+        @last_visual_selection[:end_row],
+        @last_visual_selection[:end_col]
+      )
+      @visual_handler = if line_mode
+                          KeyHandler::VisualLineMode.new(self, @buffer, @selection, @register, undo_manager: @undo_manager)
+                        else
+                          KeyHandler::VisualMode.new(self, @buffer, @selection, @register, undo_manager: @undo_manager)
+                        end
+
+      # Move cursor to end of selection
+      active_window.cursor_row = @last_visual_selection[:end_row]
+      active_window.cursor_col = @last_visual_selection[:end_col]
+    end
+
     private
 
     def initialize_key_handlers
@@ -104,8 +131,21 @@ module Mui
     end
 
     def clear_visual_mode
+      save_visual_selection if @selection
       @selection = nil
       @visual_handler = nil
+    end
+
+    def save_visual_selection
+      return unless @selection
+
+      @last_visual_selection = {
+        start_row: @selection.start_row,
+        start_col: @selection.start_col,
+        end_row: @selection.end_row,
+        end_col: @selection.end_col,
+        line_mode: @selection.line_mode
+      }
     end
 
     def toggle_visual_line_mode(new_mode)

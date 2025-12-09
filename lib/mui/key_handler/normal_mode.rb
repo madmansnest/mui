@@ -431,8 +431,22 @@ module Mui
         when "T"
           # gT - previous tab
           handle_tab_prev
+        when "v"
+          # gv - restore last visual selection
+          handle_restore_visual
         else
           clear_pending
+        end
+      end
+
+      def handle_restore_visual
+        @pending_motion = nil
+        if @mode_manager.last_visual_selection
+          @mode_manager.restore_visual_selection
+          line_mode = @mode_manager.last_visual_selection[:line_mode]
+          result(mode: line_mode ? Mode::VISUAL_LINE : Mode::VISUAL)
+        else
+          result(message: "No previous visual selection")
         end
       end
 
