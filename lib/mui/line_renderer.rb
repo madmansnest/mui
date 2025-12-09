@@ -89,10 +89,22 @@ module Mui
       return if text.nil? || text.empty?
 
       if @color_scheme && @color_scheme[style]
-        screen.put_with_style(y, x, text, @color_scheme[style])
+        resolved_style = resolve_style(style)
+        screen.put_with_style(y, x, text, resolved_style)
       else
         screen.put(y, x, text)
       end
+    end
+
+    def resolve_style(style)
+      style_hash = @color_scheme[style]
+      return style_hash if style_hash[:bg]
+
+      # Inherit background from :normal if not specified
+      normal_style = @color_scheme[:normal]
+      return style_hash unless normal_style
+
+      style_hash.merge(bg: normal_style[:bg])
     end
   end
 end

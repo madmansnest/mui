@@ -53,7 +53,9 @@ module Mui
       end
 
       def clear
-        ::Curses.clear
+        # Use erase instead of clear to avoid flicker
+        # erase marks the screen for clearing but doesn't immediately refresh
+        ::Curses.erase
       end
 
       def refresh

@@ -16,6 +16,20 @@ module Mui
       scheme.define :command_line, fg: :white, bg: :darkgray
       scheme.define :tab_bar, fg: :white, bg: :blue
       scheme.define :tab_bar_active, fg: :white, bg: :magenta, bold: true
+      # Syntax highlighting
+      scheme.define :syntax_keyword, fg: :magenta, bold: true
+      scheme.define :syntax_string, fg: :green
+      scheme.define :syntax_comment, fg: :cyan
+      scheme.define :syntax_number, fg: :red
+      scheme.define :syntax_symbol, fg: :yellow
+      scheme.define :syntax_constant, fg: :yellow
+      scheme.define :syntax_operator, fg: :white
+      scheme.define :syntax_identifier, fg: :white
+      scheme.define :syntax_preprocessor, fg: :magenta
+      scheme.define :syntax_instance_variable, fg: :cyan
+      scheme.define :syntax_global_variable, fg: :red
+      scheme.define :syntax_method_call, fg: :blue
+      scheme.define :syntax_type, fg: :green
       scheme
     end
 
@@ -33,6 +47,20 @@ module Mui
       scheme.define :command_line, fg: :solarized_base0, bg: :solarized_base03
       scheme.define :tab_bar, fg: :solarized_base1, bg: :solarized_base02
       scheme.define :tab_bar_active, fg: :solarized_base03, bg: :solarized_blue, bold: true
+      # Syntax highlighting
+      scheme.define :syntax_keyword, fg: :solarized_green, bold: true
+      scheme.define :syntax_string, fg: :solarized_cyan
+      scheme.define :syntax_comment, fg: :solarized_base01
+      scheme.define :syntax_number, fg: :solarized_magenta
+      scheme.define :syntax_symbol, fg: :solarized_blue
+      scheme.define :syntax_constant, fg: :solarized_yellow
+      scheme.define :syntax_operator, fg: :solarized_base0
+      scheme.define :syntax_identifier, fg: :solarized_base0
+      scheme.define :syntax_preprocessor, fg: :solarized_orange
+      scheme.define :syntax_instance_variable, fg: :solarized_blue
+      scheme.define :syntax_global_variable, fg: :solarized_red
+      scheme.define :syntax_method_call, fg: :solarized_blue
+      scheme.define :syntax_type, fg: :solarized_yellow
       scheme
     end
 
@@ -50,6 +78,20 @@ module Mui
       scheme.define :command_line, fg: :solarized_base00, bg: :solarized_base3
       scheme.define :tab_bar, fg: :solarized_base01, bg: :solarized_base2
       scheme.define :tab_bar_active, fg: :solarized_base3, bg: :solarized_blue, bold: true
+      # Syntax highlighting
+      scheme.define :syntax_keyword, fg: :solarized_green, bold: true
+      scheme.define :syntax_string, fg: :solarized_cyan
+      scheme.define :syntax_comment, fg: :solarized_base1
+      scheme.define :syntax_number, fg: :solarized_magenta
+      scheme.define :syntax_symbol, fg: :solarized_blue
+      scheme.define :syntax_constant, fg: :solarized_yellow
+      scheme.define :syntax_operator, fg: :solarized_base00
+      scheme.define :syntax_identifier, fg: :solarized_base00
+      scheme.define :syntax_preprocessor, fg: :solarized_orange
+      scheme.define :syntax_instance_variable, fg: :solarized_blue
+      scheme.define :syntax_global_variable, fg: :solarized_red
+      scheme.define :syntax_method_call, fg: :solarized_blue
+      scheme.define :syntax_type, fg: :solarized_yellow
       scheme
     end
 
@@ -67,6 +109,20 @@ module Mui
       scheme.define :command_line, fg: :monokai_fg, bg: :monokai_bg
       scheme.define :tab_bar, fg: :monokai_fg, bg: :monokai_purple
       scheme.define :tab_bar_active, fg: :monokai_bg, bg: :monokai_pink, bold: true
+      # Syntax highlighting
+      scheme.define :syntax_keyword, fg: :monokai_pink, bold: true
+      scheme.define :syntax_string, fg: :monokai_yellow
+      scheme.define :syntax_comment, fg: :monokai_cyan
+      scheme.define :syntax_number, fg: :monokai_purple
+      scheme.define :syntax_symbol, fg: :monokai_orange
+      scheme.define :syntax_constant, fg: :monokai_purple
+      scheme.define :syntax_operator, fg: :monokai_pink
+      scheme.define :syntax_identifier, fg: :monokai_fg
+      scheme.define :syntax_preprocessor, fg: :monokai_pink
+      scheme.define :syntax_instance_variable, fg: :monokai_orange
+      scheme.define :syntax_global_variable, fg: :monokai_pink
+      scheme.define :syntax_method_call, fg: :monokai_green
+      scheme.define :syntax_type, fg: :monokai_cyan
       scheme
     end
 
@@ -84,6 +140,20 @@ module Mui
       scheme.define :command_line, fg: :nord_snow0, bg: :nord_polar0
       scheme.define :tab_bar, fg: :nord_snow0, bg: :nord_polar2
       scheme.define :tab_bar_active, fg: :nord_polar0, bg: :nord_frost1, bold: true
+      # Syntax highlighting
+      scheme.define :syntax_keyword, fg: :nord_frost2, bold: true
+      scheme.define :syntax_string, fg: :nord_aurora_green
+      scheme.define :syntax_comment, fg: :nord_polar3
+      scheme.define :syntax_number, fg: :nord_aurora_purple
+      scheme.define :syntax_symbol, fg: :nord_aurora_yellow
+      scheme.define :syntax_constant, fg: :nord_aurora_yellow
+      scheme.define :syntax_operator, fg: :nord_frost2
+      scheme.define :syntax_identifier, fg: :nord_snow0
+      scheme.define :syntax_preprocessor, fg: :nord_aurora_purple
+      scheme.define :syntax_instance_variable, fg: :nord_frost0
+      scheme.define :syntax_global_variable, fg: :nord_aurora_red
+      scheme.define :syntax_method_call, fg: :nord_frost1
+      scheme.define :syntax_type, fg: :nord_frost3
       scheme
     end
 
@@ -101,6 +171,19 @@ module Mui
       scheme.define :command_line, fg: :gruvbox_fg, bg: :gruvbox_bg
       scheme.define :tab_bar, fg: :gruvbox_fg, bg: :gruvbox_gray
       scheme.define :tab_bar_active, fg: :gruvbox_bg, bg: :gruvbox_orange, bold: true
+      # Syntax highlighting
+      scheme.define :syntax_keyword, fg: :gruvbox_red, bold: true
+      scheme.define :syntax_string, fg: :gruvbox_green
+      scheme.define :syntax_comment, fg: :gruvbox_gray
+      scheme.define :syntax_number, fg: :gruvbox_purple
+      scheme.define :syntax_symbol, fg: :gruvbox_aqua
+      scheme.define :syntax_constant, fg: :gruvbox_yellow
+      scheme.define :syntax_operator, fg: :gruvbox_fg
+      scheme.define :syntax_identifier, fg: :gruvbox_fg
+      scheme.define :syntax_preprocessor, fg: :gruvbox_aqua
+      scheme.define :syntax_instance_variable, fg: :gruvbox_blue
+      scheme.define :syntax_global_variable, fg: :gruvbox_red
+      scheme.define :syntax_method_call, fg: :gruvbox_aqua
       scheme
     end
 
@@ -118,6 +201,20 @@ module Mui
       scheme.define :command_line, fg: :dracula_fg, bg: :dracula_bg
       scheme.define :tab_bar, fg: :dracula_fg, bg: :dracula_selection
       scheme.define :tab_bar_active, fg: :dracula_bg, bg: :dracula_purple, bold: true
+      # Syntax highlighting
+      scheme.define :syntax_keyword, fg: :dracula_pink, bold: true
+      scheme.define :syntax_string, fg: :dracula_yellow
+      scheme.define :syntax_comment, fg: :dracula_comment
+      scheme.define :syntax_number, fg: :dracula_purple
+      scheme.define :syntax_symbol, fg: :dracula_cyan
+      scheme.define :syntax_constant, fg: :dracula_cyan
+      scheme.define :syntax_operator, fg: :dracula_pink
+      scheme.define :syntax_identifier, fg: :dracula_fg
+      scheme.define :syntax_preprocessor, fg: :dracula_pink
+      scheme.define :syntax_instance_variable, fg: :dracula_purple
+      scheme.define :syntax_global_variable, fg: :dracula_red
+      scheme.define :syntax_method_call, fg: :dracula_green
+      scheme.define :syntax_type, fg: :dracula_cyan
       scheme
     end
 
@@ -135,6 +232,20 @@ module Mui
       scheme.define :command_line, fg: :tokyo_fg, bg: :tokyo_bg
       scheme.define :tab_bar, fg: :tokyo_fg, bg: :tokyo_comment
       scheme.define :tab_bar_active, fg: :tokyo_bg, bg: :tokyo_blue, bold: true
+      # Syntax highlighting
+      scheme.define :syntax_keyword, fg: :tokyo_purple, bold: true
+      scheme.define :syntax_string, fg: :tokyo_green
+      scheme.define :syntax_comment, fg: :tokyo_comment
+      scheme.define :syntax_number, fg: :tokyo_orange
+      scheme.define :syntax_symbol, fg: :tokyo_cyan
+      scheme.define :syntax_constant, fg: :tokyo_yellow
+      scheme.define :syntax_operator, fg: :tokyo_blue
+      scheme.define :syntax_identifier, fg: :tokyo_fg
+      scheme.define :syntax_preprocessor, fg: :tokyo_purple
+      scheme.define :syntax_instance_variable, fg: :tokyo_red
+      scheme.define :syntax_global_variable, fg: :tokyo_red
+      scheme.define :syntax_method_call, fg: :tokyo_blue
+      scheme.define :syntax_type, fg: :tokyo_cyan
       scheme
     end
   end

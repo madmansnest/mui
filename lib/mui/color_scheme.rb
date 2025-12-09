@@ -13,6 +13,19 @@ module Mui
       message_info
       tab_bar
       tab_bar_active
+      syntax_keyword
+      syntax_string
+      syntax_comment
+      syntax_number
+      syntax_symbol
+      syntax_constant
+      syntax_operator
+      syntax_identifier
+      syntax_preprocessor
+      syntax_instance_variable
+      syntax_global_variable
+      syntax_method_call
+      syntax_type
     ].freeze
 
     attr_reader :name, :colors
