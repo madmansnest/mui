@@ -1,6 +1,20 @@
 ## [Unreleased]
 
 ### Added
+- Visual mode indent commands (Vim-compatible):
+  - `>` to add indent to selected lines (shiftwidth spaces or tab)
+  - `<` to remove indent from selected lines
+  - Works in both Visual mode (`v`) and Visual Line mode (`V`)
+  - Empty lines are skipped (Vim behavior)
+  - Multiple lines indented as single undo group
+  - Cursor moves to first selected line after operation
+  - Configuration options: `shiftwidth` (default: 2), `expandtab` (default: true), `tabstop` (default: 8)
+  - `reselect_after_indent` option (default: false): Keep selection after indent for continuous adjustment
+- Reselect last visual selection (`gv` command):
+  - `gv` in Normal mode restores the previous visual selection
+  - Works with both Visual mode and Visual Line mode
+  - Cursor moves to end of selection
+  - Useful for repeating operations on the same selection (e.g., multiple indents)
 - Asynchronous job execution system (JobManager):
   - `JobManager` class for managing background tasks with Thread + Queue
   - `Job` class with status tracking (pending, running, completed, failed, cancelled)

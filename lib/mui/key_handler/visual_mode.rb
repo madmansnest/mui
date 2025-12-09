@@ -78,6 +78,10 @@ module Mui
           handle_change
         when "y"
           handle_yank
+        when ">"
+          handle_indent(:right)
+        when "<"
+          handle_indent(:left)
         when '"'
           @pending_motion = :register_select
           result
@@ -203,6 +207,74 @@ module Mui
         self.cursor_row = range[:start_row]
         self.cursor_col = range[:start_col]
         window.clamp_cursor_to_line(@buffer)
+      end
+
+      def handle_indent(direction)
+        range = @selection.normalized_range
+        indent_lines(range[:start_row], range[:end_row], direction)
+
+        # Move cursor to the beginning of the first selected line (Vim behavior)
+        self.cursor_row = range[:start_row]
+        self.cursor_col = 0
+
+        if Mui.config.get(:reselect_after_indent)
+          # Keep selection for continuous indent adjustment
+          @selection.update_end(range[:end_row], @buffer.line(range[:end_row]).length)
+          result
+        else
+          result(mode: Mode::NORMAL, clear_selection: true)
+        end
+      end
+
+      def indent_lines(start_row, end_row, direction)
+        indent_string = build_indent_string
+
+        @undo_manager&.begin_group unless @undo_manager&.in_group?
+
+        (start_row..end_row).each do |row|
+          if direction == :right
+            add_indent(row, indent_string)
+          else
+            remove_indent(row, Mui.config.get(:shiftwidth))
+          end
+        end
+
+        @undo_manager&.end_group
+      end
+
+      def build_indent_string
+        if Mui.config.get(:expandtab)
+          " " * Mui.config.get(:shiftwidth)
+        else
+          "\t"
+        end
+      end
+
+      def add_indent(row, indent_string)
+        return if @buffer.line(row).empty? # Skip empty lines
+
+        indent_string.reverse.each_char do |char|
+          @buffer.insert_char(row, 0, char)
+        end
+      end
+
+      def remove_indent(row, width)
+        line = @buffer.line(row)
+        return if line.empty? # Skip empty lines
+
+        removed = 0
+
+        while removed < width && !line.empty?
+          char = line[0]
+          break unless [" ", "\t"].include?(char)
+
+          char_width = char == "\t" ? Mui.config.get(:tabstop) : 1
+          break if removed + char_width > width && char == "\t"
+
+          @buffer.delete_char(row, 0)
+          removed += char_width
+          line = @buffer.line(row)
+        end
       end
 
       def handle_pending_motion(key)

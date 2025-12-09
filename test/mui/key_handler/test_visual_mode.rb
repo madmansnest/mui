@@ -670,4 +670,133 @@ class TestKeyHandlerVisualMode < Minitest::Test
       assert @register.linewise?(name: "1")
     end
   end
+
+  class TestIndentOperator < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.replace_line(0, "hello")
+      @buffer.insert_line(1, "world")
+      @buffer.insert_line(2, "test")
+      @window = Mui::Window.new(@buffer)
+      @undo_manager = Mui::UndoManager.new
+    end
+
+    def test_indent_right_single_line
+      @selection = Mui::Selection.new(0, 0)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::VisualMode.new(@mode_manager, @buffer, @selection, nil, undo_manager: @undo_manager)
+
+      result = @handler.handle(">")
+
+      assert_equal "  hello", @buffer.line(0)
+      assert_equal "world", @buffer.line(1)
+      assert_equal Mui::Mode::NORMAL, result.mode
+      assert result.clear_selection?
+    end
+
+    def test_indent_right_multiple_lines
+      @selection = Mui::Selection.new(0, 0)
+      @selection.update_end(1, 0)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::VisualMode.new(@mode_manager, @buffer, @selection, nil, undo_manager: @undo_manager)
+
+      @handler.handle(">")
+
+      assert_equal "  hello", @buffer.line(0)
+      assert_equal "  world", @buffer.line(1)
+      assert_equal "test", @buffer.line(2)
+    end
+
+    def test_indent_left_single_line
+      @buffer.replace_line(0, "  hello")
+      @selection = Mui::Selection.new(0, 0)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::VisualMode.new(@mode_manager, @buffer, @selection, nil, undo_manager: @undo_manager)
+
+      result = @handler.handle("<")
+
+      assert_equal "hello", @buffer.line(0)
+      assert_equal Mui::Mode::NORMAL, result.mode
+      assert result.clear_selection?
+    end
+
+    def test_indent_left_multiple_lines
+      @buffer.replace_line(0, "  hello")
+      @buffer.replace_line(1, "  world")
+      @selection = Mui::Selection.new(0, 0)
+      @selection.update_end(1, 0)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::VisualMode.new(@mode_manager, @buffer, @selection, nil, undo_manager: @undo_manager)
+
+      @handler.handle("<")
+
+      assert_equal "hello", @buffer.line(0)
+      assert_equal "world", @buffer.line(1)
+      assert_equal "test", @buffer.line(2)
+    end
+
+    def test_indent_left_no_indent
+      @selection = Mui::Selection.new(0, 0)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::VisualMode.new(@mode_manager, @buffer, @selection, nil, undo_manager: @undo_manager)
+
+      @handler.handle("<")
+
+      assert_equal "hello", @buffer.line(0)
+    end
+
+    def test_indent_skips_empty_lines
+      @buffer.replace_line(0, "hello")
+      @buffer.replace_line(1, "")
+      @buffer.replace_line(2, "test")
+      @selection = Mui::Selection.new(0, 0)
+      @selection.update_end(2, 0)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::VisualMode.new(@mode_manager, @buffer, @selection, nil, undo_manager: @undo_manager)
+
+      @handler.handle(">")
+
+      assert_equal "  hello", @buffer.line(0)
+      assert_equal "", @buffer.line(1)
+      assert_equal "  test", @buffer.line(2)
+    end
+
+    def test_indent_moves_cursor_to_start_row
+      @selection = Mui::Selection.new(0, 0)
+      @selection.update_end(2, 0)
+      @window.cursor_row = 2
+      @window.cursor_col = 3
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::VisualMode.new(@mode_manager, @buffer, @selection, nil, undo_manager: @undo_manager)
+
+      @handler.handle(">")
+
+      assert_equal 0, @window.cursor_row
+      assert_equal 0, @window.cursor_col
+    end
+
+    def test_indent_with_tab_when_expandtab_false
+      Mui.config.set(:expandtab, false)
+      @selection = Mui::Selection.new(0, 0)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::VisualMode.new(@mode_manager, @buffer, @selection, nil, undo_manager: @undo_manager)
+
+      @handler.handle(">")
+
+      assert_equal "\thello", @buffer.line(0)
+    ensure
+      Mui.config.set(:expandtab, true)
+    end
+
+    def test_indent_left_removes_partial_indent
+      @buffer.replace_line(0, " hello")
+      @selection = Mui::Selection.new(0, 0)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::VisualMode.new(@mode_manager, @buffer, @selection, nil, undo_manager: @undo_manager)
+
+      @handler.handle("<")
+
+      assert_equal "hello", @buffer.line(0)
+    end
+  end
 end
