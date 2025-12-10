@@ -83,6 +83,8 @@ module Mui
 
     def parse(cmd)
       case cmd.strip
+      when ""
+        { action: :no_op }
       when "e"
         { action: :open }
       when /^e\s+(.+)/

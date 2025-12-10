@@ -181,6 +181,20 @@ class TestCommandLine < Minitest::Test
       assert_equal "unknown", result[:command]
     end
 
+    def test_empty_command_returns_no_op
+      result = @command_line.execute
+
+      assert_equal({ action: :no_op }, result)
+    end
+
+    def test_whitespace_only_command_returns_no_op
+      "   ".each_char { |c| @command_line.input(c) }
+
+      result = @command_line.execute
+
+      assert_equal({ action: :no_op }, result)
+    end
+
     def test_strips_leading_and_trailing_spaces
       "  w  ".each_char { |c| @command_line.input(c) }
 

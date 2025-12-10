@@ -132,6 +132,8 @@ module Mui
 
       def execute_action(command_result)
         case command_result[:action]
+        when :no_op
+          result
         when :open
           handle_open
         when :open_as
