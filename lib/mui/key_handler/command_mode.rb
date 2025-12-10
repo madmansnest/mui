@@ -26,6 +26,10 @@ module Mui
           handle_tab
         when Curses::KEY_BTAB
           handle_shift_tab
+        when Curses::KEY_LEFT
+          handle_cursor_left
+        when Curses::KEY_RIGHT
+          handle_cursor_right
         else
           handle_character_input(key)
         end
@@ -63,6 +67,16 @@ module Mui
 
         @completion_state.select_previous
         apply_current_completion
+        result
+      end
+
+      def handle_cursor_left
+        @command_line.move_cursor_left
+        result
+      end
+
+      def handle_cursor_right
+        @command_line.move_cursor_right
         result
       end
 
