@@ -246,6 +246,8 @@
   - Previously arrow keys were interpreted as characters (e.g., Left inserted 'a')
   - Backspace now deletes character before cursor position
   - Character input now inserts at cursor position
+- Empty command (`:` then Enter) no longer crashes
+  - Previously caused error when trying to look up empty string as plugin command
 
 ## [0.1.0] - 2025-11-30
 
