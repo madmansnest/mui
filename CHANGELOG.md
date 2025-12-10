@@ -237,6 +237,11 @@
 - Visual mode operations now correctly use the active window's buffer
   - Fixed yank/delete/change/indent operations using stale buffer reference after tab or window switch
   - Operations now properly target the current active window's buffer
+- Command mode cursor movement with arrow keys
+  - Left/Right arrow keys now move cursor within command line
+  - Previously arrow keys were interpreted as characters (e.g., Left inserted 'a')
+  - Backspace now deletes character before cursor position
+  - Character input now inserts at cursor position
 
 ## [0.1.0] - 2025-11-30
 

@@ -130,8 +130,14 @@ module Mui
 
       render_status_area
 
-      # screen_cursor_y already includes y_offset via window.y
-      @screen.move_cursor(window.screen_cursor_y, window.screen_cursor_x)
+      # Position cursor based on current mode
+      if @mode_manager.mode == Mode::COMMAND
+        # In command mode, cursor is on the command line (after ":" + buffer position)
+        @screen.move_cursor(@screen.height - 1, 1 + @command_line.cursor_pos)
+      else
+        # In other modes, cursor is in the editor window
+        @screen.move_cursor(window.screen_cursor_y, window.screen_cursor_x)
+      end
       @screen.refresh
     end
 

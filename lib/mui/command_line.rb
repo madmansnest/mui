@@ -5,27 +5,42 @@ module Mui
     # Commands that accept file path arguments
     FILE_COMMANDS = %w[e w sp split vs vsplit tabnew tabe tabedit].freeze
 
-    attr_reader :buffer
+    attr_reader :buffer, :cursor_pos
 
     def initialize
       @buffer = ""
+      @cursor_pos = 0
     end
 
     def input(char)
-      @buffer += char
+      @buffer = @buffer[0...@cursor_pos].to_s + char + @buffer[@cursor_pos..].to_s
+      @cursor_pos += char.length
     end
 
     def backspace
-      @buffer = @buffer.chop
+      return if @cursor_pos.zero?
+
+      @buffer = @buffer[0...(@cursor_pos - 1)].to_s + @buffer[@cursor_pos..].to_s
+      @cursor_pos -= 1
     end
 
     def clear
       @buffer = ""
+      @cursor_pos = 0
+    end
+
+    def move_cursor_left
+      @cursor_pos -= 1 if @cursor_pos.positive?
+    end
+
+    def move_cursor_right
+      @cursor_pos += 1 if @cursor_pos < @buffer.length
     end
 
     def execute
       result = parse(@buffer)
       @buffer = ""
+      @cursor_pos = 0
       result
     end
 
