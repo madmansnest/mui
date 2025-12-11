@@ -3,7 +3,8 @@
 module Mui
   # Main editor class that coordinates all components
   class Editor
-    attr_reader :tab_manager, :undo_manager, :autocmd, :command_registry, :job_manager, :color_scheme, :floating_window
+    attr_reader :tab_manager, :undo_manager, :autocmd, :command_registry, :job_manager, :color_scheme, :floating_window,
+                :insert_completion_state
     attr_accessor :message, :running
 
     def initialize(file_path = nil, adapter: TerminalAdapter::Curses.new, load_config: true)
@@ -26,6 +27,7 @@ module Mui
 
       @command_line = CommandLine.new
       @completion_renderer = CompletionRenderer.new(@screen, @color_scheme)
+      @insert_completion_renderer = InsertCompletionRenderer.new(@screen, @color_scheme)
       @floating_window = FloatingWindow.new(@color_scheme)
       @message = nil
       @running = true
@@ -36,6 +38,7 @@ module Mui
       @autocmd = Autocmd.new
       @command_registry = CommandRegistry.new
       @job_manager = JobManager.new(autocmd: @autocmd)
+      @insert_completion_state = InsertCompletionState.new
 
       # Install and load plugins via bundler/inline
       Mui.plugin_manager.install_and_load
@@ -166,14 +169,25 @@ module Mui
       @floating_window.hide
     end
 
+    # Start insert mode completion with LSP items
+    def start_insert_completion(items, prefix: "")
+      @insert_completion_state.start(items, prefix:)
+    end
+
+    # Check if insert completion is active
+    def insert_completion_active?
+      @insert_completion_state.active?
+    end
+
     private
 
     def buffer_content_changed?
       # Track if content actually changed (for TextChanged event)
-      @last_buffer_hash ||= buffer.lines.hash
-      current_hash = buffer.lines.hash
-      changed = @last_buffer_hash != current_hash
-      @last_buffer_hash = current_hash
+      # Use change_count instead of hash for O(1) performance
+      @last_change_count ||= buffer.change_count
+      current_count = buffer.change_count
+      changed = @last_change_count != current_count
+      @last_change_count = current_count
       changed
     end
 
@@ -233,11 +247,13 @@ module Mui
       style = @color_scheme[:command_line]
       @screen.put_with_style(@screen.height - 1, 0, status_line, style)
 
-      # Render completion popup in command mode or search mode
+      # Render completion popup based on mode
       if @mode_manager.mode == Mode::COMMAND
         render_completion_popup
       elsif [Mode::SEARCH_FORWARD, Mode::SEARCH_BACKWARD].include?(@mode_manager.mode)
         render_search_completion_popup
+      elsif @mode_manager.mode == Mode::INSERT
+        render_insert_completion_popup
       end
 
       # Render floating window if visible
@@ -262,6 +278,17 @@ module Mui
       base_row = @screen.height - 1
       base_col = 1 # After the ":"
       @completion_renderer.render(completion_state, base_row, base_col)
+    end
+
+    def render_insert_completion_popup
+      return unless @insert_completion_state&.active?
+
+      # Popup appears below the cursor
+      @insert_completion_renderer.render(
+        @insert_completion_state,
+        window.screen_cursor_y,
+        window.screen_cursor_x
+      )
     end
 
     def apply_result(result)

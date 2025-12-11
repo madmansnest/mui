@@ -14,12 +14,15 @@ module Mui
     PRINTABLE_MAX = 0x10FFFF
 
     # Control key codes (Ctrl+letter)
+    CTRL_SPACE = 0 # Also Ctrl+@ (NUL)
     CTRL_C = 3
     CTRL_H = 8   # Also backspace in some terminals
     CTRL_J = 10  # Also newline
     CTRL_K = 11
     CTRL_L = 12
+    CTRL_N = 14
     CTRL_O = 15
+    CTRL_P = 16
     CTRL_S = 19
     CTRL_V = 22
     CTRL_W = 23

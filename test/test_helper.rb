@@ -222,6 +222,12 @@ module MuiTestHelper
       18 # Ctrl-r
     when "c-w"
       23 # Ctrl-w
+    when "tab"
+      9 # Tab
+    when "c-n"
+      14 # Ctrl-n
+    when "c-p"
+      16 # Ctrl-p
     else
       raise "Unknown special key: <#{name}>"
     end

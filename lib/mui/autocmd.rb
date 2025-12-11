@@ -14,6 +14,7 @@ module Mui
       TextChanged
       InsertEnter
       InsertLeave
+      InsertCompletion
       JobStarted
       JobCompleted
       JobFailed

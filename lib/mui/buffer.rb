@@ -2,7 +2,7 @@
 
 module Mui
   class Buffer
-    attr_reader :lines
+    attr_reader :lines, :change_count
     attr_accessor :name, :modified, :undo_manager, :readonly
 
     # Alias for autocmd pattern matching
@@ -15,6 +15,7 @@ module Mui
       @undo_manager = nil
       @readonly = false
       @custom_highlighter_map = {}
+      @change_count = 0
     end
 
     def readonly?
@@ -144,6 +145,7 @@ module Mui
       @lines[row] ||= empty_line
       @lines[row].insert(col, char)
       @modified = true
+      @change_count += 1
     end
 
     def delete_char_without_record(row, col)
@@ -151,17 +153,20 @@ module Mui
 
       @lines[row].slice!(col)
       @modified = true
+      @change_count += 1
     end
 
     def insert_line_without_record(row, text = nil)
       @lines.insert(row, text&.dup || empty_line)
       @modified = true
+      @change_count += 1
     end
 
     def delete_line_without_record(row)
       @lines.delete_at(row)
       @lines = [empty_line] if @lines.empty?
       @modified = true
+      @change_count += 1
     end
 
     def split_line_without_record(row, col)
@@ -186,11 +191,13 @@ module Mui
         delete_across_lines(start_row, start_col, end_row, end_col)
       end
       @modified = true
+      @change_count += 1
     end
 
     def replace_line_without_record(row, text)
       @lines[row] = text.dup
       @modified = true
+      @change_count += 1
     end
 
     def restore_range(start_row, start_col, deleted_lines)
@@ -218,6 +225,7 @@ module Mui
         @lines.insert(start_row + deleted_lines.size - 1, last_deleted + last_part)
       end
       @modified = true
+      @change_count += 1
     end
 
     private
