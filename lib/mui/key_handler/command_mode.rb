@@ -279,6 +279,9 @@ module Mui
       end
 
       def save_buffer(path = nil)
+        # Trigger BufWritePre before saving
+        @mode_manager.editor&.trigger_autocmd(:BufWritePre)
+
         if path
           buffer.save(path)
         elsif buffer.name == "[No Name]"
@@ -286,6 +289,10 @@ module Mui
         else
           buffer.save
         end
+
+        # Trigger BufWritePost after saving
+        @mode_manager.editor&.trigger_autocmd(:BufWritePost)
+
         result(message: "\"#{buffer.name}\" written")
       rescue SystemCallError => e
         result(message: "Error: #{e.message}")

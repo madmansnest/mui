@@ -422,4 +422,74 @@ class TestBuffer
       assert_equal "world", @buffer.line(1)
     end
   end
+
+  class TestCustomHighlighters < Minitest::Test
+    class MockHighlighter
+      def initialize(name)
+        @name = name
+      end
+
+      attr_reader :name
+    end
+
+    def setup
+      @buffer = Mui::Buffer.new
+    end
+
+    def teardown
+      @buffer = nil
+    end
+
+    def test_add_custom_highlighter
+      highlighter = MockHighlighter.new("test")
+
+      @buffer.add_custom_highlighter(:test, highlighter)
+
+      assert @buffer.custom_highlighter?(:test)
+    end
+
+    def test_custom_highlighter_returns_false_when_not_present
+      refute @buffer.custom_highlighter?(:nonexistent)
+    end
+
+    def test_remove_custom_highlighter
+      highlighter = MockHighlighter.new("test")
+      @buffer.add_custom_highlighter(:test, highlighter)
+
+      @buffer.remove_custom_highlighter(:test)
+
+      refute @buffer.custom_highlighter?(:test)
+    end
+
+    def test_remove_nonexistent_highlighter_does_not_raise
+      @buffer.remove_custom_highlighter(:nonexistent)
+      # Should not raise
+    end
+
+    def test_custom_highlighters_returns_all_highlighters
+      h1 = MockHighlighter.new("first")
+      h2 = MockHighlighter.new("second")
+
+      @buffer.add_custom_highlighter(:first, h1)
+      @buffer.add_custom_highlighter(:second, h2)
+
+      highlighters = @buffer.custom_highlighters(nil)
+      assert_equal 2, highlighters.length
+      assert_includes highlighters, h1
+      assert_includes highlighters, h2
+    end
+
+    def test_overwrite_existing_highlighter
+      h1 = MockHighlighter.new("original")
+      h2 = MockHighlighter.new("replacement")
+
+      @buffer.add_custom_highlighter(:test, h1)
+      @buffer.add_custom_highlighter(:test, h2)
+
+      highlighters = @buffer.custom_highlighters(nil)
+      assert_equal 1, highlighters.length
+      assert_includes highlighters, h2
+      refute_includes highlighters, h1
+    end
+  end
 end

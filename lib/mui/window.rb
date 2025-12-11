@@ -108,6 +108,11 @@ module Mui
       @cursor_col = max_col if @cursor_col > max_col
     end
 
+    # Refresh highlighters (call when custom highlighters change)
+    def refresh_highlighters
+      @line_renderer = create_line_renderer
+    end
+
     private
 
     def create_line_renderer
