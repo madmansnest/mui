@@ -3,7 +3,7 @@
 module Mui
   # Main editor class that coordinates all components
   class Editor
-    attr_reader :tab_manager, :undo_manager, :autocmd, :command_registry, :job_manager
+    attr_reader :tab_manager, :undo_manager, :autocmd, :command_registry, :job_manager, :color_scheme, :floating_window
     attr_accessor :message, :running
 
     def initialize(file_path = nil, adapter: TerminalAdapter::Curses.new, load_config: true)
@@ -26,6 +26,7 @@ module Mui
 
       @command_line = CommandLine.new
       @completion_renderer = CompletionRenderer.new(@screen, @color_scheme)
+      @floating_window = FloatingWindow.new(@color_scheme)
       @message = nil
       @running = true
 
@@ -114,11 +115,70 @@ module Mui
 
     def handle_key(key)
       @message = nil
+
+      # Close floating window on Escape or any key input (except scroll keys if we add them)
+      if @floating_window.visible
+        @floating_window.hide
+        return if key == KeyCode::ESCAPE
+      end
+
+      old_window = window
+      old_buffer = old_window&.buffer
+      old_modified = old_buffer&.modified
       result = @mode_manager.current_handler.handle(key)
       apply_result(result)
+
+      current_window = window
+      return unless current_window # Guard against nil window (e.g., after closing last tab)
+
+      current_buffer = current_window.buffer
+
+      # Trigger BufEnter if buffer changed (window focus change)
+      trigger_autocmd(:BufEnter) if current_buffer != old_buffer
+
+      # Trigger TextChanged if buffer was modified
+      trigger_autocmd(:TextChanged) if (current_buffer.modified && !old_modified) || buffer_content_changed?
+    end
+
+    # Trigger autocmd event with current context
+    def trigger_autocmd(event)
+      context = CommandContext.new(editor: self, buffer:, window:)
+      @autocmd.trigger(event, context)
+    end
+
+    # Show a floating window with content at the cursor position
+    # @param content [String, Array<String>] Content to display
+    # @param max_width [Integer, nil] Maximum width
+    # @param max_height [Integer, nil] Maximum height
+    def show_floating(content, max_width: nil, max_height: nil)
+      # Position below cursor
+      row = window.screen_cursor_y + 1
+      col = window.screen_cursor_x
+
+      @floating_window.show(
+        content,
+        row:,
+        col:,
+        max_width: max_width || (@screen.width / 2),
+        max_height: max_height || 10
+      )
+    end
+
+    # Hide the floating window
+    def hide_floating
+      @floating_window.hide
     end
 
     private
+
+    def buffer_content_changed?
+      # Track if content actually changed (for TextChanged event)
+      @last_buffer_hash ||= buffer.lines.hash
+      current_hash = buffer.lines.hash
+      changed = @last_buffer_hash != current_hash
+      @last_buffer_hash = current_hash
+      changed
+    end
 
     def update_window_size
       window_manager.update_layout(y_offset: tab_bar_height)
@@ -182,6 +242,9 @@ module Mui
       elsif [Mode::SEARCH_FORWARD, Mode::SEARCH_BACKWARD].include?(@mode_manager.mode)
         render_search_completion_popup
       end
+
+      # Render floating window if visible
+      @floating_window.render(@screen)
     end
 
     def render_search_completion_popup
@@ -223,11 +286,6 @@ module Mui
           @autocmd.register(event, pattern: h[:pattern], &h[:handler])
         end
       end
-    end
-
-    def trigger_autocmd(event)
-      context = CommandContext.new(editor: self, buffer: @buffer, window:)
-      @autocmd.trigger(event, context)
     end
 
     def process_job_results

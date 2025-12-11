@@ -37,6 +37,13 @@ module Mui
       scheme.define :diff_delete, fg: :red
       scheme.define :diff_hunk, fg: :cyan
       scheme.define :diff_header, fg: :yellow, bold: true
+      # LSP diagnostics
+      scheme.define :diagnostic_error, fg: :red, underline: true
+      scheme.define :diagnostic_warning, fg: :yellow, underline: true
+      scheme.define :diagnostic_info, fg: :blue, underline: true
+      scheme.define :diagnostic_hint, fg: :cyan, underline: true
+      # Floating window
+      scheme.define :floating_window, fg: :white, bg: :blue
       scheme
     end
 

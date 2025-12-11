@@ -1,6 +1,21 @@
 ## [Unreleased]
 
 ### Added
+- Floating window (popup) support:
+  - `FloatingWindow` class for displaying temporary content like hover info
+  - `editor.show_floating(content, max_width:, max_height:)` to show popup at cursor
+  - `editor.hide_floating` to close the popup
+  - Automatic positioning with screen bounds adjustment
+  - Unicode box-drawing border characters
+  - Scroll support for long content
+  - Auto-close on any key press (Escape only closes without processing)
+  - Configurable via `:floating_window` color scheme element
+- Dynamic custom highlighter management for buffers:
+  - `Buffer#add_custom_highlighter(key, highlighter)` to add named highlighter
+  - `Buffer#remove_custom_highlighter(key)` to remove highlighter by key
+  - `Buffer#custom_highlighter?(key)` to check if highlighter exists
+  - `Window#refresh_highlighters` to rebuild line renderer after highlighter changes
+  - Enables plugins to dynamically add/remove highlighting (e.g., LSP diagnostics)
 - Interactive command execution support for plugins:
   - `TerminalAdapter#suspend` / `#resume` methods for temporarily exiting curses mode
   - `Editor#suspend_ui` block helper for safe UI suspension
