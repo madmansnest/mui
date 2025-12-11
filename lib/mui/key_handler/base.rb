@@ -23,6 +23,10 @@ module Mui
         window&.buffer || @buffer
       end
 
+      def editor
+        @mode_manager&.editor
+      end
+
       # Handle a key input
       def handle(_key)
         raise MethodNotOverriddenError, "Subclasses must orverride #handle"

@@ -1,6 +1,31 @@
 ## [Unreleased]
 
 ### Added
+- Insert mode completion support for LSP:
+  - `InsertCompletionState` class for managing LSP completion items
+  - `InsertCompletionRenderer` for displaying completion popup below cursor
+  - `Editor#start_insert_completion(items, prefix:)` API for plugins
+  - `Editor#insert_completion_active?` to check completion state
+  - Key bindings in Insert mode:
+    - `↑` / `Ctrl+P`: Select previous completion
+    - `↓` / `Ctrl+N`: Select next completion
+    - `Tab`: Confirm and insert selected completion
+    - `Esc`: Cancel completion popup
+  - Popup automatically repositions above cursor if space is limited
+  - Auto-trigger completion after `.`, `@`, and `::` characters
+  - Uses LSP `textEdit` for precise text replacement
+- Buffer word completion (`Ctrl+N` / `Ctrl+P` in Insert mode):
+  - Collects words from current buffer as completion candidates
+  - `BufferWordCache` class for high-performance word caching
+  - Cache built once when entering Insert mode, updated incrementally on changes
+  - Auto-triggers while typing (1+ character prefix)
+  - Dynamic filtering: completion list updates as you type more characters
+  - Excludes word at cursor position from candidates
+  - Triggered when no LSP completion is active
+- `InsertCompletion` autocmd event for plugins to hook into completion triggers
+- `KeyCode::CTRL_N`, `KeyCode::CTRL_P`, and `KeyCode::CTRL_SPACE` constants
+- `KeyHandler::Base#editor` helper method for accessing editor instance
+- Insert mode plugin keymap support (allows plugins to define Insert mode key bindings)
 - LSP configuration stub (`Mui.lsp` / `Mui::LspConfigStub`):
   - Allows `.muirc` to call `Mui.lsp { ... }` before mui-lsp gem is loaded
   - Stub stores configuration (preset servers via `use`, custom servers via `server`)
@@ -279,6 +304,12 @@
   - Optimize event sorting in line renderer using array tuples instead of hash arrays
   - Add style resolution cache to avoid repeated hash merges
   - Reduce hash lookups in token cache by inlining cache validation
+- Improved buffer change detection performance:
+  - Added `Buffer#change_count` for O(1) change detection
+  - Replaced `buffer.lines.hash` (O(n)) with counter comparison in `TextChanged` event trigger
+- Improved buffer word completion performance:
+  - Use `String#scan` with regex for fast word extraction instead of character-by-character iteration
+  - Direct ASCII code comparison for word character detection instead of regex match per character
 
 ### Fixed
 - Command-line completion Tab behavior:
