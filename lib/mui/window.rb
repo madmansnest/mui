@@ -61,7 +61,12 @@ module Mui
 
       visible_height.times do |i|
         row = @scroll_row + i
-        render_line(screen, row, i, options)
+        if row < @buffer.line_count
+          render_line(screen, row, i, options)
+        else
+          # Clear lines beyond buffer content to prevent screen remnants
+          clear_line(screen, i)
+        end
       end
 
       @status_line_renderer.render(screen, @y + visible_height)
@@ -114,6 +119,11 @@ module Mui
     end
 
     private
+
+    def clear_line(screen, screen_row)
+      empty_line = " " * visible_width
+      screen.put(@y + screen_row, @x, empty_line)
+    end
 
     def create_line_renderer
       renderer = LineRenderer.new(@color_scheme)
