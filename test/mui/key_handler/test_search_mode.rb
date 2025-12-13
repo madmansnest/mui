@@ -264,4 +264,19 @@ class TestSearchMode < Minitest::Test
 
     refute @handler.completion_state.active?
   end
+
+  def test_execute_search_uses_current_buffer_after_switch
+    # Switch to a new buffer via window (simulates :e command)
+    new_buffer = Mui::Buffer.new
+    new_buffer.lines[0] = "new content xyz"
+    @window.buffer = new_buffer
+
+    @search_input.input("xyz")
+    result = @handler.handle(Mui::KeyCode::ENTER_CR)
+
+    assert_equal Mui::Mode::NORMAL, result.mode
+    refute result.cancelled?
+    refute_includes result.message.to_s, "Pattern not found"
+    assert_equal 1, @search_state.matches.length
+  end
 end

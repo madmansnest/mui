@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Fixed
+- Fixed search returning "Pattern not found" after switching buffers via `:e`
+  - `execute_search` was using `@buffer` (initial buffer) instead of `buffer` method (current buffer)
+  - Now correctly searches in the current buffer after buffer switch
 - Search highlight now recalculates correctly when switching buffers via `:e`
   - Previously, search highlight from old buffer remained visible in new buffer
   - Now calls `find_all_matches` on buffer switch to recalculate matches (Vim-compatible behavior)
