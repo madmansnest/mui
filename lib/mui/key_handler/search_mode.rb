@@ -163,7 +163,7 @@ module Mui
 
         direction = @search_input.prompt == "/" ? :forward : :backward
         @search_state.set_pattern(pattern, direction)
-        @search_state.find_all_matches(@buffer)
+        @search_state.find_all_matches(buffer)
 
         match = if direction == :forward
                   @search_state.find_next(cursor_row, cursor_col)
