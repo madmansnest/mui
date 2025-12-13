@@ -11,6 +11,9 @@
   - Previously, buffers opened with these commands had no UndoManager set
   - Each buffer now gets its own UndoManager (Vim-compatible: independent undo history per buffer)
   - Handlers now use dynamic `undo_manager` reference to support buffer switching
+- Fixed screen remnants after `:e` command when new file has fewer lines
+  - Previously, lines from the old buffer would remain visible below the new content
+  - Now explicitly clears lines beyond buffer content during render
 
 ## [0.2.0] - 2025-12-12
 

@@ -232,6 +232,57 @@ class TestWindow < Minitest::Test
     end
   end
 
+  class TestRender < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @adapter = Mui::TerminalAdapter::Test.new(width: 80, height: 24)
+      @screen = Mui::Screen.new(adapter: @adapter)
+      @window = Mui::Window.new(@buffer, width: 80, height: 24)
+    end
+
+    def test_clears_lines_beyond_buffer_content
+      # Add only 3 lines to the buffer
+      @buffer.insert_line(0, "Line 1")
+      @buffer.insert_line(1, "Line 2")
+      @buffer.insert_line(2, "Line 3")
+
+      @window.render(@screen)
+
+      # visible_height = 23 (height 24 - 1 for status line)
+      # Lines 0-2 have content, lines 3-22 should be cleared (spaces)
+
+      # Check that line 3 (y=3) is cleared with spaces
+      output_at_third_row = @adapter.all_output.find { |entry| entry[:y] == 3 && entry[:x].zero? }
+      refute_nil output_at_third_row, "Should have output at row 3"
+      assert_equal " " * 80, output_at_third_row[:text], "Line beyond buffer should be cleared with spaces"
+
+      # Check that last visible line (22) is also cleared
+      output_at_last_row = @adapter.all_output.find { |entry| entry[:y] == 22 && entry[:x].zero? }
+      refute_nil output_at_last_row, "Should have output at row 22"
+      assert_equal " " * 80, output_at_last_row[:text], "Last visible line should be cleared"
+    end
+
+    def test_clears_lines_after_buffer_switch_to_shorter_file
+      # Start with a long file
+      10.times { |i| @buffer.insert_line(i, "Line #{i}") }
+      @window.render(@screen)
+
+      # Clear adapter output buffer for fresh comparison
+      @adapter.clear
+
+      # Switch to a shorter buffer
+      short_buffer = Mui::Buffer.new
+      short_buffer.insert_line(0, "Short")
+      @window.buffer = short_buffer
+      @window.render(@screen)
+
+      # Lines beyond the new buffer's content should be cleared
+      output_at_second_row = @adapter.all_output.find { |entry| entry[:y] == 1 && entry[:x].zero? }
+      refute_nil output_at_second_row, "Should have output at row 1"
+      assert_equal " " * 80, output_at_second_row[:text], "Previous content should be cleared"
+    end
+  end
+
   class TestScreenCursorPosition < Minitest::Test
     def setup
       @buffer = Mui::Buffer.new
