@@ -1,0 +1,301 @@
+---
+title: Configuration
+layout: default
+nav_order: 4
+---
+
+# Configuration
+{: .no_toc }
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
+
+## Configuration Files
+
+Mui supports two configuration files:
+
+| File | Scope |
+|------|-------|
+| `~/.muirc` | Global settings (all projects) |
+| `.lmuirc` | Local settings (current directory) |
+
+Local settings (`.lmuirc`) override global settings (`~/.muirc`).
+
+Configuration files are written in Ruby using Mui's DSL.
+
+## Basic Settings
+
+### Color Scheme
+
+```ruby
+Mui.set :colorscheme, "tokyo_night"
+```
+
+Available themes:
+- `mui` (default)
+- `solarized_dark`
+- `solarized_light`
+- `monokai`
+- `nord`
+- `gruvbox_dark`
+- `dracula`
+- `tokyo_night`
+
+### Indentation
+
+```ruby
+# Number of spaces for Tab display
+Mui.set :tabstop, 4
+
+# Number of spaces for indent operations (>, <)
+Mui.set :shiftwidth, 4
+
+# Use spaces instead of tabs
+Mui.set :expandtab, true
+```
+
+### Syntax Highlighting
+
+```ruby
+# Enable/disable syntax highlighting
+Mui.set :syntax, true
+```
+
+### Leader Key
+
+```ruby
+# Set leader key (default: backslash)
+Mui.set :leader, " "  # Space as leader
+```
+
+### Key Timeout
+
+```ruby
+# Timeout for multi-key sequences (milliseconds)
+Mui.set :timeoutlen, 1000
+```
+
+---
+
+## Custom Key Mappings
+
+Define custom key bindings with `Mui.keymap`:
+
+```ruby
+Mui.keymap :mode, "key" do |ctx|
+  # action
+end
+```
+
+### Modes
+
+- `:normal` - Normal mode
+- `:insert` - Insert mode
+- `:visual` - Visual mode
+- `:command` - Command mode
+
+### Examples
+
+```ruby
+# Save with <Leader>w
+Mui.keymap :normal, "<Leader>w" do |ctx|
+  ctx.editor.execute_command("w")
+end
+
+# Quick escape in Insert mode
+Mui.keymap :insert, "jk" do |ctx|
+  ctx.change_mode(:normal)
+end
+
+# Close buffer with <Leader>q
+Mui.keymap :normal, "<Leader>q" do |ctx|
+  ctx.editor.execute_command("q")
+end
+```
+
+### Special Key Notation
+
+| Notation | Key |
+|----------|-----|
+| `<Leader>` | Leader key |
+| `<Space>` | Space bar |
+| `<Tab>` | Tab key |
+| `<CR>`, `<Enter>` | Enter key |
+| `<Esc>` | Escape key |
+| `<BS>` | Backspace |
+| `<C-x>` | Ctrl+x |
+| `<C-S-x>` | Ctrl+Shift+x |
+| `<S-x>` | Shift+x |
+
+### Multi-key Sequences
+
+```ruby
+# <Leader>ff for find files
+Mui.keymap :normal, "<Leader>ff" do |ctx|
+  ctx.editor.execute_command("Files")
+end
+
+# <Leader>fg for grep
+Mui.keymap :normal, "<Leader>fg" do |ctx|
+  ctx.editor.execute_command("Rg")
+end
+
+# Ctrl-x Ctrl-s to save (Emacs style)
+Mui.keymap :normal, "<C-x><C-s>" do |ctx|
+  ctx.editor.execute_command("w")
+end
+```
+
+---
+
+## Custom Commands
+
+Define custom Ex commands with `Mui.command`:
+
+```ruby
+Mui.command :name do |ctx|
+  # action
+end
+```
+
+### Examples
+
+```ruby
+# Simple greeting
+Mui.command :hello do |ctx|
+  ctx.set_message("Hello, World!")
+end
+
+# Command with arguments
+Mui.command :echo do |ctx, *args|
+  ctx.set_message(args.join(" "))
+end
+
+# Open configuration file
+Mui.command :config do |ctx|
+  ctx.editor.execute_command("e ~/.muirc")
+end
+```
+
+---
+
+## Autocmd Events
+
+Execute code when events occur with `Mui.autocmd`:
+
+```ruby
+Mui.autocmd :event, pattern: "*.ext" do |ctx|
+  # action
+end
+```
+
+### Available Events
+
+| Event | Trigger |
+|-------|---------|
+| `BufEnter` | When entering a buffer |
+| `BufLeave` | When leaving a buffer |
+| `BufWrite` | When writing a buffer |
+| `BufWritePre` | Before writing a buffer |
+| `BufWritePost` | After writing a buffer |
+| `ModeChanged` | When mode changes |
+| `CursorMoved` | When cursor moves |
+| `TextChanged` | When text is modified |
+| `InsertEnter` | When entering Insert mode |
+| `InsertLeave` | When leaving Insert mode |
+| `InsertCompletion` | When completion is triggered |
+| `JobStarted` | When a job starts |
+| `JobCompleted` | When a job completes |
+| `JobFailed` | When a job fails |
+| `JobCancelled` | When a job is cancelled |
+
+### Examples
+
+```ruby
+# Auto-save on leaving Insert mode
+Mui.autocmd :InsertLeave do |ctx|
+  ctx.editor.execute_command("w") if ctx.buffer.modified?
+end
+
+# Show message when opening Ruby files
+Mui.autocmd :BufEnter, pattern: "*.rb" do |ctx|
+  ctx.set_message("Ruby file loaded")
+end
+
+# Format before saving
+Mui.autocmd :BufWritePre, pattern: "*.rb" do |ctx|
+  # Run formatter
+end
+```
+
+---
+
+## Using Plugins
+
+Load plugins with `Mui.use`:
+
+```ruby
+Mui.use "mui-lsp"
+Mui.use "mui-git"
+Mui.use "mui-fzf"
+```
+
+See [Plugins]({{ site.baseurl }}/plugins) for more details.
+
+---
+
+## Complete Example
+
+```ruby
+# ~/.muirc
+
+# Appearance
+Mui.set :colorscheme, "tokyo_night"
+Mui.set :syntax, true
+
+# Indentation
+Mui.set :tabstop, 2
+Mui.set :shiftwidth, 2
+Mui.set :expandtab, true
+
+# Leader key
+Mui.set :leader, " "
+
+# Plugins
+Mui.use "mui-lsp"
+Mui.use "mui-fzf"
+
+# Key mappings
+Mui.keymap :normal, "<Leader>w" do |ctx|
+  ctx.editor.execute_command("w")
+end
+
+Mui.keymap :normal, "<Leader>q" do |ctx|
+  ctx.editor.execute_command("q")
+end
+
+Mui.keymap :normal, "<Leader>ff" do |ctx|
+  ctx.editor.execute_command("Files")
+end
+
+# Custom commands
+Mui.command :reload do |ctx|
+  ctx.editor.execute_command("e")
+  ctx.set_message("File reloaded")
+end
+
+# LSP configuration
+Mui.lsp do
+  use :ruby
+
+  # TypeScript (requires typescript-language-server)
+  server :typescript,
+    command: ["typescript-language-server", "--stdio"],
+    filetypes: ["typescript", "typescriptreact", "javascript", "javascriptreact"]
+end
+```
