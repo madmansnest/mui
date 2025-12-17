@@ -60,6 +60,7 @@ module Mui
       # monokai
       monokai_bg: 235,         # #262626 (~#272822)
       monokai_fg: 231,         # #ffffff (~#f8f8f2)
+      monokai_comment: 101,    # #87875f (~#75715e) - Olive gray for comments
       monokai_pink: 197,       # #ff005f (~#f92672)
       monokai_green: 148,      # #afd700 (~#a6e22e)
       monokai_orange: 208,     # #ff8700 (~#fd971f)
@@ -155,7 +156,7 @@ module Mui
       solarized_violet: :blue, solarized_blue: :blue,
       solarized_cyan: :cyan, solarized_green: :green,
       # monokai
-      monokai_bg: :black, monokai_fg: :white,
+      monokai_bg: :black, monokai_fg: :white, monokai_comment: :white,
       monokai_pink: :magenta, monokai_green: :green,
       monokai_orange: :yellow, monokai_purple: :magenta,
       monokai_cyan: :cyan, monokai_yellow: :yellow,

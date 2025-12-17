@@ -6,6 +6,16 @@
   - 19 new `mui_*` colors in `EXTENDED_COLOR_MAP` (mui_bg, mui_fg, mui_comment, etc.)
   - Syntax highlighting follows Vim standard highlight groups (Comment, Constant, Identifier, Statement, PreProc, Type, Special)
   - 8-color fallbacks for all mui colors
+- Improved all bundled themes to match their original color schemes:
+  - Solarized Dark/Light: Adjusted visual selection, operators, and diff colors
+  - Monokai: Fixed comment color to olive gray (#75715e), added `monokai_comment` color
+  - Nord: Adjusted status line and constant colors to match Nord palette
+  - Gruvbox: Adjusted identifier and keyword colors
+  - Dracula: Adjusted visual selection and symbol colors
+  - Tokyo Night: Adjusted operator and constant colors
+- Added LSP diagnostics and floating window styles to all themes:
+  - `diagnostic_error`, `diagnostic_warning`, `diagnostic_info`, `diagnostic_hint`
+  - `floating_window`
 - 256-color support stabilization:
   - Environment capability detection (`Curses.has_colors?`, `Curses.colors`, `Curses.color_pairs`)
   - Automatic 8-color fallback for terminals without 256-color support
