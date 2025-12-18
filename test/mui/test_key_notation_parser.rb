@@ -131,4 +131,18 @@ class TestKeyNotationParser < Minitest::Test
   def test_normalize_input_key_nil_for_invalid
     assert_nil Mui::KeyNotationParser.normalize_input_key(nil)
   end
+
+  # Shift+Tab tests
+
+  def test_parse_shift_tab
+    assert_equal [:shift_tab], Mui::KeyNotationParser.parse("<S-Tab>")
+    assert_equal [:shift_tab], Mui::KeyNotationParser.parse("<s-tab>")
+    assert_equal [:shift_tab], Mui::KeyNotationParser.parse("<btab>")
+    assert_equal [:shift_tab], Mui::KeyNotationParser.parse("<BTab>")
+  end
+
+  def test_normalize_input_key_shift_tab
+    # Curses::KEY_BTAB = 353
+    assert_equal :shift_tab, Mui::KeyNotationParser.normalize_input_key(353)
+  end
 end

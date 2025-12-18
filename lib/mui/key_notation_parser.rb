@@ -10,6 +10,8 @@ module Mui
     SPECIAL_KEYS = {
       "space" => " ",
       "tab" => "\t",
+      "s-tab" => :shift_tab,
+      "btab" => :shift_tab,
       "cr" => "\r",
       "enter" => "\r",
       "return" => "\r",
@@ -92,15 +94,18 @@ module Mui
       def parse_special(name)
         return :leader if name.casecmp?("leader")
 
+        # Check SPECIAL_KEYS first (handles <S-Tab>, <btab>, etc.)
+        normalized_name = name.downcase
+        return SPECIAL_KEYS[normalized_name] if SPECIAL_KEYS.key?(normalized_name)
+
         # Handle Ctrl key: <C-x>, <Ctrl-x>, <C-X>
         return parse_ctrl_key(::Regexp.last_match(2)) if name =~ /\A(c|ctrl)-(.+)\z/i
 
         # Handle Shift key: <S-x>, <Shift-x>
         return parse_shift_key(::Regexp.last_match(2)) if name =~ /\A(s|shift)-(.+)\z/i
 
-        # Handle other special keys
-        normalized_name = name.downcase
-        SPECIAL_KEYS[normalized_name] || name
+        # Unknown special key - return as-is
+        name
       end
 
       # Normalize an input key (from terminal) to internal representation
@@ -136,6 +141,8 @@ module Mui
           "\e"
         when KeyCode::TAB
           "\t"
+        when 353 # Curses::KEY_BTAB (Shift+Tab)
+          :shift_tab
         when KeyCode::BACKSPACE
           "\x7f"
         when 0..31
