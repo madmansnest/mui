@@ -236,12 +236,42 @@ class TestCLexer < Minitest::Test
     assert_includes types, :identifier
   end
 
+  # Function definitions/calls
+  def test_tokenize_function_definition
+    tokens, _state = @lexer.tokenize("int main()")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "main", func_tokens[0].text
+  end
+
+  def test_tokenize_function_definition_with_args
+    tokens, _state = @lexer.tokenize("void print(int x)")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "print", func_tokens[0].text
+  end
+
+  def test_tokenize_function_call
+    # Function calls are also highlighted as function_definition
+    tokens, _state = @lexer.tokenize("printf(msg)")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "printf", func_tokens[0].text
+  end
+
+  def test_tokenize_function_with_space_before_paren
+    tokens, _state = @lexer.tokenize("int main (void)")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "main", func_tokens[0].text
+  end
+
   # Complex examples
   def test_tokenize_function_declaration
     tokens, _state = @lexer.tokenize("int main(void)")
     types = tokens.map(&:type)
     assert_includes types, :type
-    assert_includes types, :identifier
+    assert_includes types, :function_definition
   end
 
   def test_tokenize_variable_declaration

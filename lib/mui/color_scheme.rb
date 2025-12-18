@@ -27,6 +27,7 @@ module Mui
       syntax_instance_variable
       syntax_global_variable
       syntax_method_call
+      syntax_function_definition
       syntax_type
       diff_add
       diff_delete

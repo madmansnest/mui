@@ -222,12 +222,64 @@ class TestRubyLexer < Minitest::Test
     assert_equal :comment, tokens3[0].type
   end
 
+  # Function definitions
+  def test_tokenize_function_definition
+    tokens, _state = @lexer.tokenize("def hello")
+    assert_equal 2, tokens.length
+    assert_equal :keyword, tokens[0].type
+    assert_equal "def", tokens[0].text
+    assert_equal :function_definition, tokens[1].type
+    assert_equal "hello", tokens[1].text
+  end
+
+  def test_tokenize_function_definition_with_question_mark
+    tokens, _state = @lexer.tokenize("def empty?")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "empty?", func_tokens[0].text
+  end
+
+  def test_tokenize_function_definition_with_bang
+    tokens, _state = @lexer.tokenize("def save!")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "save!", func_tokens[0].text
+  end
+
+  def test_tokenize_function_definition_with_equals
+    tokens, _state = @lexer.tokenize("def value=")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "value=", func_tokens[0].text
+  end
+
+  def test_tokenize_class_method_definition
+    tokens, _state = @lexer.tokenize("def self.create")
+    # def, self, .create
+    # Note: .create is matched as method_call (includes the dot)
+    # Both method_call and function_definition use the same color
+    assert_equal 3, tokens.length
+    assert_equal :keyword, tokens[0].type
+    assert_equal "def", tokens[0].text
+    assert_equal :keyword, tokens[1].type
+    assert_equal "self", tokens[1].text
+    assert_equal :method_call, tokens[2].type
+    assert_equal ".create", tokens[2].text
+  end
+
+  def test_tokenize_function_definition_with_args
+    tokens, _state = @lexer.tokenize("def hello(name)")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "hello", func_tokens[0].text
+  end
+
   # Complex examples
   def test_tokenize_method_definition
     tokens, _state = @lexer.tokenize("def hello(name)")
     types = tokens.map(&:type)
     assert_includes types, :keyword
-    assert_includes types, :identifier
+    assert_includes types, :function_definition
   end
 
   def test_tokenize_class_definition
