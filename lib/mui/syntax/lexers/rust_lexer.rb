@@ -59,6 +59,8 @@ module Mui
           [:type, /\G\b(?:bool|char|str|i8|i16|i32|i64|i128|isize|u8|u16|u32|u64|u128|usize|f32|f64)\b/],
           # Keywords
           [:keyword, /\G\b(?:as|async|await|break|const|continue|crate|dyn|else|enum|extern|false|fn|for|if|impl|in|let|loop|match|mod|move|mut|pub|ref|return|self|Self|static|struct|super|trait|true|type|unsafe|use|where|while)\b/],
+          # Function definition names (fn の後)
+          [:function_definition, /\G(?<=fn )[a-z_][a-zA-Z0-9_]*/],
           # Type names (start with uppercase)
           [:constant, /\G\b[A-Z][a-zA-Z0-9_]*\b/],
           # Regular identifiers

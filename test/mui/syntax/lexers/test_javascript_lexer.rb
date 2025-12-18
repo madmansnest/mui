@@ -296,12 +296,53 @@ class TestJavaScriptLexer < Minitest::Test
     assert_equal :string, tokens3[0].type
   end
 
+  # Function definitions
+  def test_tokenize_function_definition
+    tokens, _state = @lexer.tokenize("function hello")
+    assert_equal 2, tokens.length
+    assert_equal :keyword, tokens[0].type
+    assert_equal "function", tokens[0].text
+    assert_equal :function_definition, tokens[1].type
+    assert_equal "hello", tokens[1].text
+  end
+
+  def test_tokenize_function_definition_with_parens
+    tokens, _state = @lexer.tokenize("function main()")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "main", func_tokens[0].text
+  end
+
+  def test_tokenize_function_definition_with_args
+    tokens, _state = @lexer.tokenize("function add(a, b)")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "add", func_tokens[0].text
+  end
+
+  def test_tokenize_async_function_definition
+    # async function fetchData()
+    tokens, _state = @lexer.tokenize("async function fetchData()")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "fetchData", func_tokens[0].text
+  end
+
+  def test_tokenize_function_expression
+    # const foo = function bar()
+    # Note: 'bar' is a named function expression, should be function_definition
+    tokens, _state = @lexer.tokenize("const foo = function bar()")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "bar", func_tokens[0].text
+  end
+
   # Complex examples
   def test_tokenize_function_declaration
     tokens, _state = @lexer.tokenize("function main() {")
     types = tokens.map(&:type)
     assert_includes types, :keyword
-    assert_includes types, :identifier
+    assert_includes types, :function_definition
   end
 
   def test_tokenize_const_declaration

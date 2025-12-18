@@ -51,6 +51,8 @@ module Mui
           [:type, /\G\b(?:bool|byte|complex64|complex128|error|float32|float64|int|int8|int16|int32|int64|rune|string|uint|uint8|uint16|uint32|uint64|uintptr|any|comparable)\b/],
           # Keywords
           [:keyword, /\G\b(?:break|case|chan|const|continue|default|defer|else|fallthrough|for|func|go|goto|if|import|interface|map|package|range|return|select|struct|switch|type|var)\b/],
+          # Function definition names (func の後)
+          [:function_definition, /\G(?<=func )[a-z_][a-zA-Z0-9_]*/],
           # Exported identifiers (start with uppercase)
           [:constant, /\G\b[A-Z][a-zA-Z0-9_]*\b/],
           # Regular identifiers

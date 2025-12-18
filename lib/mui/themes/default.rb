@@ -51,6 +51,9 @@ module Mui
       # Function calls
       scheme.define :syntax_method_call, fg: :mui_function
 
+      # Function definitions
+      scheme.define :syntax_function_definition, fg: :mui_function
+
       # Diff highlighting
       scheme.define :diff_add, fg: :green
       scheme.define :diff_delete, fg: :mui_error
@@ -102,6 +105,7 @@ module Mui
       scheme.define :syntax_type, fg: :solarized_yellow
       scheme.define :syntax_symbol, fg: :solarized_magenta
       scheme.define :syntax_method_call, fg: :solarized_blue
+      scheme.define :syntax_function_definition, fg: :solarized_blue
 
       # Diff highlighting
       scheme.define :diff_add, fg: :solarized_green
@@ -154,6 +158,7 @@ module Mui
       scheme.define :syntax_type, fg: :solarized_yellow
       scheme.define :syntax_symbol, fg: :solarized_magenta
       scheme.define :syntax_method_call, fg: :solarized_blue
+      scheme.define :syntax_function_definition, fg: :solarized_blue
 
       # Diff highlighting
       scheme.define :diff_add, fg: :solarized_green
@@ -206,6 +211,7 @@ module Mui
       scheme.define :syntax_type, fg: :monokai_cyan
       scheme.define :syntax_symbol, fg: :monokai_orange
       scheme.define :syntax_method_call, fg: :monokai_green
+      scheme.define :syntax_function_definition, fg: :monokai_green
 
       # Diff highlighting
       scheme.define :diff_add, fg: :monokai_green
@@ -258,6 +264,7 @@ module Mui
       scheme.define :syntax_type, fg: :nord_frost0
       scheme.define :syntax_symbol, fg: :nord_aurora_yellow
       scheme.define :syntax_method_call, fg: :nord_frost1
+      scheme.define :syntax_function_definition, fg: :nord_frost1
 
       # Diff highlighting
       scheme.define :diff_add, fg: :nord_aurora_green
@@ -310,6 +317,7 @@ module Mui
       scheme.define :syntax_type, fg: :gruvbox_yellow
       scheme.define :syntax_symbol, fg: :gruvbox_purple
       scheme.define :syntax_method_call, fg: :gruvbox_aqua
+      scheme.define :syntax_function_definition, fg: :gruvbox_aqua
 
       # Diff highlighting
       scheme.define :diff_add, fg: :gruvbox_green
@@ -362,6 +370,7 @@ module Mui
       scheme.define :syntax_type, fg: :dracula_cyan
       scheme.define :syntax_symbol, fg: :dracula_purple
       scheme.define :syntax_method_call, fg: :dracula_green
+      scheme.define :syntax_function_definition, fg: :dracula_green
 
       # Diff highlighting
       scheme.define :diff_add, fg: :dracula_green
@@ -414,6 +423,7 @@ module Mui
       scheme.define :syntax_type, fg: :tokyo_blue
       scheme.define :syntax_symbol, fg: :tokyo_yellow
       scheme.define :syntax_method_call, fg: :tokyo_blue
+      scheme.define :syntax_function_definition, fg: :tokyo_blue
 
       # Diff highlighting
       scheme.define :diff_add, fg: :tokyo_green

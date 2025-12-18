@@ -30,6 +30,8 @@ module Mui
           [:type, /\G\b(?:char|double|float|int|long|short|signed|unsigned|void|_Bool|_Complex|_Imaginary)\b/],
           # Other keywords (if, for, return, const, static, etc.)
           [:keyword, /\G\b(?:auto|break|case|const|continue|default|do|else|enum|extern|for|goto|if|register|return|sizeof|static|struct|switch|typedef|union|volatile|while|inline|restrict|_Alignas|_Alignof|_Atomic|_Generic|_Noreturn|_Static_assert|_Thread_local)\b/],
+          # Function call/definition (identifier followed by parenthesis)
+          [:function_definition, /\G\b[a-zA-Z_][a-zA-Z0-9_]*(?=\s*\()/],
           # Identifiers
           [:identifier, /\G\b[a-zA-Z_][a-zA-Z0-9_]*\b/],
           # Operators

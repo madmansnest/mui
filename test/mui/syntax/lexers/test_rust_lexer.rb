@@ -309,12 +309,53 @@ class TestRustLexer < Minitest::Test
     assert_equal :comment, tokens3[0].type
   end
 
+  # Function definitions
+  def test_tokenize_function_definition
+    tokens, _state = @lexer.tokenize("fn main")
+    assert_equal 2, tokens.length
+    assert_equal :keyword, tokens[0].type
+    assert_equal "fn", tokens[0].text
+    assert_equal :function_definition, tokens[1].type
+    assert_equal "main", tokens[1].text
+  end
+
+  def test_tokenize_function_definition_with_parens
+    tokens, _state = @lexer.tokenize("fn hello()")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "hello", func_tokens[0].text
+  end
+
+  def test_tokenize_function_definition_with_return_type
+    tokens, _state = @lexer.tokenize("fn calculate() -> i32")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "calculate", func_tokens[0].text
+  end
+
+  def test_tokenize_function_definition_with_lifetime
+    # fn foo<'a>(x: &'a str) - 'a is lifetime, foo is function name
+    tokens, _state = @lexer.tokenize("fn foo<'a>")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "foo", func_tokens[0].text
+  end
+
+  def test_tokenize_impl_method
+    # Methods in impl blocks: fn method_name()
+    # Note: impl methods have same pattern as standalone functions
+    tokens, _state = @lexer.tokenize("fn process_data")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "process_data", func_tokens[0].text
+  end
+
   # Complex examples
   def test_tokenize_function_declaration
     tokens, _state = @lexer.tokenize("fn main() {")
     types = tokens.map(&:type)
     assert_includes types, :keyword
-    assert_includes types, :identifier
+    assert_includes types, :function_definition
   end
 
   def test_tokenize_struct_definition

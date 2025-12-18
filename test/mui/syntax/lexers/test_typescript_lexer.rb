@@ -235,6 +235,38 @@ class TestTypeScriptLexer < Minitest::Test
     assert_includes texts, "implements"
   end
 
+  # Function definitions
+  def test_tokenize_function_definition
+    tokens, _state = @lexer.tokenize("function hello")
+    assert_equal 2, tokens.length
+    assert_equal :keyword, tokens[0].type
+    assert_equal "function", tokens[0].text
+    assert_equal :function_definition, tokens[1].type
+    assert_equal "hello", tokens[1].text
+  end
+
+  def test_tokenize_function_definition_with_type
+    tokens, _state = @lexer.tokenize("function add(a: number, b: number): number")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "add", func_tokens[0].text
+  end
+
+  def test_tokenize_async_function_definition
+    tokens, _state = @lexer.tokenize("async function fetchData()")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "fetchData", func_tokens[0].text
+  end
+
+  def test_tokenize_function_with_generics
+    # NOTE: Generic type parameters like <T> are matched as :type
+    tokens, _state = @lexer.tokenize("function identity(arg)")
+    func_tokens = tokens.select { |t| t.type == :function_definition }
+    assert_equal 1, func_tokens.length
+    assert_equal "identity", func_tokens[0].text
+  end
+
   # Edge cases
   def test_tokenize_empty_line
     tokens, state = @lexer.tokenize("")

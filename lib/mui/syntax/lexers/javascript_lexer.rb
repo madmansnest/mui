@@ -61,6 +61,28 @@ module Mui
         TEMPLATE_LITERAL_START = /\A`/
         TEMPLATE_LITERAL_END = /`/
 
+        # Override tokenize to post-process function definitions
+        def tokenize(line, state = nil)
+          tokens, new_state = super
+
+          # Convert identifiers after 'function' keyword to function_definition
+          tokens.each_with_index do |token, i|
+            next unless i.positive? &&
+                        tokens[i - 1].type == :keyword &&
+                        tokens[i - 1].text == "function" &&
+                        token.type == :identifier
+
+            tokens[i] = Token.new(
+              type: :function_definition,
+              start_col: token.start_col,
+              end_col: token.end_col,
+              text: token.text
+            )
+          end
+
+          [tokens, new_state]
+        end
+
         protected
 
         def compiled_patterns

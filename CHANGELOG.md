@@ -1,6 +1,15 @@
 ## [Unreleased]
 
 ### Added
+- Function definition name highlighting for 6 languages:
+  - Ruby: `def hello` highlights `hello` (lookbehind pattern `(?<=def )`)
+  - Go: `func main()` highlights `main` (lookbehind pattern `(?<=func )`)
+  - Rust: `fn calculate()` highlights `calculate` (lookbehind pattern `(?<=fn )`)
+  - JavaScript: `function add()` highlights `add` (post-process after `function` keyword)
+  - TypeScript: `function fetchData()` highlights `fetchData` (post-process after `function` keyword)
+  - C: `int main()` highlights `main` (lookahead pattern for identifier before `(`)
+  - New token type `:function_definition` mapped to `syntax_function_definition` color scheme element
+  - All 8 themes updated with `syntax_function_definition` style (same color as `syntax_method_call`)
 - Improved mui default theme with 256-color palette:
   - Eye-friendly gray-based color scheme using 256-color palette
   - 19 new `mui_*` colors in `EXTENDED_COLOR_MAP` (mui_bg, mui_fg, mui_comment, etc.)

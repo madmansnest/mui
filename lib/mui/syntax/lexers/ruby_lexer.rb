@@ -47,6 +47,9 @@ module Mui
           [:global_variable, /\G\$[a-zA-Z_][a-zA-Z0-9_]*/],
           # Method calls (.to_i, .each, .map!, .empty?, etc.)
           [:method_call, /\G\.[a-z_][a-zA-Z0-9_]*[?!]?/],
+          # Function/method definition names (def の後)
+          # Note: def self.method_name is handled by method_call pattern (same color)
+          [:function_definition, /\G(?<=def )[a-z_][a-zA-Z0-9_]*[?!=]?/],
           # Identifiers (including method names with ? or !)
           [:identifier, /\G\b[a-z_][a-zA-Z0-9_]*[?!]?/],
           # Operators
