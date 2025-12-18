@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.4.0] 2025-12-19
+
 ### Added
 - `<S-Tab>` (Shift+Tab) notation support in keymap configuration:
   - Added `s-tab` and `btab` to `SPECIAL_KEYS` mapping to `:shift_tab` symbol
