@@ -1,6 +1,14 @@
 ## [Unreleased]
 
 ### Added
+- `<S-Tab>` (Shift+Tab) notation support in keymap configuration:
+  - Added `s-tab` and `btab` to `SPECIAL_KEYS` mapping to `:shift_tab` symbol
+  - `normalize_input_key()` now handles `KEY_BTAB` (353) from Curses
+  - Enables tab navigation keymaps like:
+    ```ruby
+    Mui.keymap :normal, "<Tab>", ->(ctx) { ctx.editor.tab_manager.next_tab }
+    Mui.keymap :normal, "<S-Tab>", ->(ctx) { ctx.editor.tab_manager.prev_tab }
+    ```
 - Function definition name highlighting for 6 languages:
   - Ruby: `def hello` highlights `hello` (lookbehind pattern `(?<=def )`)
   - Go: `func main()` highlights `main` (lookbehind pattern `(?<=func )`)
