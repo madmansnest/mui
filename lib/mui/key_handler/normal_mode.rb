@@ -13,7 +13,6 @@ module Mui
         @search_state = search_state
         @pending_motion = nil
         @pending_register = nil
-        @window_command = nil
         initialize_operators
       end
 
@@ -409,7 +408,7 @@ module Mui
           return result(message: "Window commands not available")
         end
 
-        @window_command ||= WindowCommand.new(window_manager)
+        @window_command = WindowCommand.new(window_manager)
         @window_command.handle(key)
         clear_pending
       end

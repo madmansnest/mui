@@ -408,4 +408,28 @@ class TestE2ETabPage < Minitest::Test
       .type("gg")
       .assert_cursor(0, 0)
   end
+
+  # Regression test: Ctrl+w commands should work in new tabs
+  def test_ctrl_w_w_works_in_new_tab
+    runner = ScriptRunner.new
+    tab_manager = runner.editor.tab_manager
+
+    # Create new tab and split window
+    runner
+      .type(":tabnew<Enter>")
+      .assert_tab_count(2)
+      .type("<C-w>v")
+
+    # Get current window count and active window
+    new_tab = tab_manager.current_tab
+    assert_equal 2, new_tab.window_manager.window_count
+
+    first_window = runner.editor.window
+
+    # Ctrl+w w should cycle to the other window in the same tab
+    runner.type("<C-w>w")
+
+    refute_equal first_window, runner.editor.window
+    assert_equal 2, new_tab.window_manager.window_count
+  end
 end
