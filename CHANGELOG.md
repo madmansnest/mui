@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+### Changed
+- FileCompleter now includes hidden files (dotfiles) in completion candidates
+  - Previously, files starting with `.` were excluded from file path completion
+  - Now returns all entries including `.`, `..`, and hidden files like `.gitignore`
+
 ## [0.4.1] 2025-12-20
 
 ### Fixed

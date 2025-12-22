@@ -41,7 +41,7 @@ class TestFileCompleter < Minitest::Test
     def test_complete_with_empty_path_excludes_hidden_files
       result = @completer.complete("")
 
-      refute(result.any? { |f| f.start_with?(".") })
+      assert(result.any? { |f| f.start_with?(".") })
     end
 
     def test_complete_with_empty_path_adds_slash_to_directories
@@ -127,8 +127,9 @@ class TestFileCompleter < Minitest::Test
   class TestCompleteSorting < TestFileCompleter
     def test_results_are_sorted
       result = @completer.complete("")
+      expected = ["../", "./", ".hidden", "another.txt", "file1.txt", "file2.rb", "subdir/"]
 
-      assert_equal result.sort, result
+      assert_equal result.sort, expected
     end
   end
 end

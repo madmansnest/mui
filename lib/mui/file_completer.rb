@@ -30,9 +30,7 @@ module Mui
       target = dir.empty? ? "." : dir
       return [] unless Dir.exist?(target)
 
-      Dir.entries(target)
-         .reject { |e| e.start_with?(".") }
-         .sort
+      Dir.entries(target).sort
     end
 
     def list_current_directory
