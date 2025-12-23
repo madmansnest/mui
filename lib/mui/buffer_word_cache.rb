@@ -8,6 +8,8 @@ module Mui
     MIN_WORD_LENGTH = 2
     # Maximum candidates to return (for performance)
     MAX_CANDIDATES = 50
+    # Regex to match word characters (alphanumeric + underscore)
+    WORD_REGEX = /\w+/
 
     def initialize(buffer)
       @buffer = buffer
@@ -71,9 +73,6 @@ module Mui
     end
 
     private
-
-    # Regex to match word characters (alphanumeric + underscore)
-    WORD_REGEX = /\w+/
 
     def build_cache
       @buffer.lines.each do |line|
