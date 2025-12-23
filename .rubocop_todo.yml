@@ -36,11 +36,6 @@ Lint/UnusedMethodArgument:
     - 'lib/mui/terminal_adapter/base.rb'
     - 'test/mui/highlighters/test_search_highlighter.rb'
 
-# Offense count: 1
-Lint/UselessConstantScoping:
-  Exclude:
-    - 'lib/mui/buffer_word_cache.rb'
-
 # Offense count: 35
 # Configuration parameters: AllowedMethods, AllowedPatterns.
 Metrics/CyclomaticComplexity:
