@@ -92,18 +92,20 @@ module Mui
     def truncate_to_width(text, max_width)
       return text if max_width <= 0
 
+      return text[0, max_width] if text.ascii_only?
+
       current_width = 0
-      result = +""
+      end_index = 0
 
       text.each_char do |char|
         char_w = UnicodeWidth.char_width(char)
         break if current_width + char_w > max_width
 
-        result << char
         current_width += char_w
+        end_index += 1
       end
 
-      result
+      text[0, end_index]
     end
   end
 end

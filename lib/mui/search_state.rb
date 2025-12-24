@@ -53,6 +53,8 @@ module Mui
 
     def clear
       @pattern = nil
+      @last_pattern = nil
+      @regex = nil
       @pattern_version += 1
       @buffer_matches.clear
     end
@@ -94,6 +96,12 @@ module Mui
       @buffer_matches[buffer_id]
     end
 
+    def generate_regex
+      return @regex if @last_pattern == @pattern
+
+      @regex = Regexp.new(@pattern)
+    end
+
     def calculate_matches(buffer)
       empty_result = [[], {}]
       return empty_result if @pattern.nil? || @pattern.empty?
@@ -101,10 +109,11 @@ module Mui
       matches = []
       row_index = {}
       begin
-        regex = Regexp.new(@pattern)
+        generate_regex
+
         buffer.line_count.times do |row|
           line = buffer.line(row)
-          row_matches = scan_line_matches(line, row, regex)
+          row_matches = scan_line_matches(line, row, @regex)
           unless row_matches.empty?
             matches.concat(row_matches)
             row_index[row] = row_matches

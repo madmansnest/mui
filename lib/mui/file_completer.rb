@@ -9,9 +9,9 @@ module Mui
       dir, prefix = split_path(partial_path)
       entries = list_directory(dir)
 
-      entries.select { |entry| entry.start_with?(prefix) }
-             .map { |entry| join_path(dir, entry) }
-             .map { |path| format_path(path) }
+      entries.filter_map do |entry|
+        format_entry_to_path(dir, entry) if entry.start_with?(prefix)
+      end
     end
 
     private
@@ -37,13 +37,15 @@ module Mui
       list_directory("").map { |entry| format_path(entry) }
     end
 
-    def join_path(dir, entry)
-      dir.empty? ? entry : File.join(dir, entry)
-    end
-
     def format_path(path)
       full_path = path.start_with?("/") ? path : File.join(".", path)
       File.directory?(full_path) ? "#{path}/" : path
+    end
+
+    def format_entry_to_path(dir, entry)
+      path = dir.empty? ? entry : File.join(dir, entry)
+
+      format_path(path)
     end
   end
 end

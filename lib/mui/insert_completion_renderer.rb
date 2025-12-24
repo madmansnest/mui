@@ -70,7 +70,7 @@ module Mui
     def calculate_max_width(items)
       return 0 if items.empty?
 
-      items.map { |item| display_width(item_label(item)) }.max + 2 # +2 for padding
+      items.reduce(0) { |max, item| [max, display_width(item_label(item))].max } + 2 # +2 for padding
     end
 
     def item_label(item)
