@@ -1,6 +1,10 @@
 ## [Unreleased]
 
 ### Added
+- YJIT support (Ruby 3.3+):
+  - `use_yjit` configuration option (default: `true`)
+  - Automatically enables YJIT at editor startup when available
+  - Disable with `Mui.set :use_yjit, false` in `.muirc`
 - Shift+Arrow key navigation across lines:
   - `Shift+Left` at line start moves to end of previous line
   - `Shift+Right` at line end moves to start of next line

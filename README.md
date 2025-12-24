@@ -168,6 +168,9 @@ Mui.set :syntax, true
 # Leader key
 Mui.set :leader, " "
 
+# YJIT (enabled by default on Ruby 3.3+)
+Mui.set :use_yjit, true
+
 # Custom keymaps
 Mui.keymap :normal, "<Leader>w" do |ctx|
   ctx.editor.execute_command("w")
