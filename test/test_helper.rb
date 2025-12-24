@@ -267,6 +267,10 @@ module MuiTestHelper
       14 # Ctrl-n
     when "c-p"
       16 # Ctrl-p
+    when "s-left"
+      Curses::KEY_SLEFT
+    when "s-right"
+      Curses::KEY_SRIGHT
     else
       raise "Unknown special key: <#{name}>"
     end

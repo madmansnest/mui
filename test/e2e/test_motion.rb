@@ -287,4 +287,30 @@ class TestE2EMotion < Minitest::Test
       .type("fz") # 'z' doesn't exist
       .assert_cursor(0, 0) # Should stay at same position
   end
+
+  def test_shift_left_moves_to_previous_line_end
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("hello<Enter>world")
+      .type("<Esc>")
+      .type("j0") # Go to start of second line
+      .assert_cursor(1, 0)
+      .type("<S-Left>")
+      .assert_cursor(0, 4) # End of first line
+  end
+
+  def test_shift_right_moves_to_next_line_start
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("hello<Enter>world")
+      .type("<Esc>")
+      .type("gg$") # Go to end of first line
+      .assert_cursor(0, 4)
+      .type("<S-Right>")
+      .assert_cursor(1, 0) # Start of second line
+  end
 end

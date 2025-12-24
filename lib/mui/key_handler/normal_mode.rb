@@ -179,6 +179,10 @@ module Mui
         when KeyCode::CTRL_W
           @pending_motion = :window_command
           result
+        when KeyCode::SHIFT_LEFT
+          handle_shift_left
+        when KeyCode::SHIFT_RIGHT
+          handle_shift_right
         else
           result
         end
@@ -261,6 +265,23 @@ module Mui
 
       def handle_move_right
         window.move_right
+        result
+      end
+
+      def handle_shift_left
+        return result unless cursor_row.positive?
+
+        window.move_up
+        # Normal mode: position at last character (not after it)
+        self.cursor_col = [current_line_length - 1, 0].max
+        result
+      end
+
+      def handle_shift_right
+        return result unless cursor_row < buffer.line_count - 1
+
+        window.move_down
+        window.move_to_line_start
         result
       end
 
