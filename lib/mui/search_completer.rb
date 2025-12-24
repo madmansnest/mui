@@ -35,7 +35,7 @@ module Mui
       buffer.line_count.times do |row|
         line = buffer.line(row)
         # Extract words (alphanumeric + underscore, minimum 2 characters)
-        line.scan(/\b[a-zA-Z_][a-zA-Z0-9_]+\b/) do |word|
+        line.scan(/\b[a-zA-Z_][a-zA-Z0-9_]+\b/o) do |word|
           words.add(word)
         end
       end

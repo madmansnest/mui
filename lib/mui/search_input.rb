@@ -5,12 +5,12 @@ module Mui
     attr_reader :buffer, :prompt
 
     def initialize(prompt = "/")
-      @buffer = ""
+      @buffer = +""
       @prompt = prompt
     end
 
     def input(char)
-      @buffer += char
+      @buffer << char
     end
 
     def backspace
@@ -18,7 +18,7 @@ module Mui
     end
 
     def clear
-      @buffer = ""
+      @buffer = +""
     end
 
     def set_prompt(prompt)

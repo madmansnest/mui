@@ -22,7 +22,7 @@ module Mui
 
     def build_status_text
       status = " #{@buffer.name}"
-      status += " [+]" if @buffer.modified
+      status << " [+]" if @buffer.modified
       status
     end
 
@@ -31,10 +31,8 @@ module Mui
     end
 
     def format_status_line(status, position)
-      padding = @window.width - status.length - position.length
-      padding = 0 if padding.negative?
-      full_status = status + (" " * padding) + position
-      full_status[0, @window.width]
+      target_length = @window.width - position.length
+      "#{status.ljust(target_length)}#{position}"[0, @window.width]
     end
   end
 end

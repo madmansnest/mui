@@ -67,7 +67,7 @@ module Mui
     def calculate_max_width(candidates)
       return 0 if candidates.empty?
 
-      candidates.map { |c| display_width(c) }.max + 2 # +2 for padding
+      candidates.reduce(0) { |max, c| [max, display_width(c)].max } + 2 # +2 for padding
     end
 
     def display_width(text)

@@ -13,8 +13,6 @@ module Mui
     ].freeze
 
     def complete(prefix)
-      all_commands = COMMANDS + plugin_command_names
-
       return all_commands.uniq.sort if prefix.empty?
 
       prefix_downcase = prefix.downcase
@@ -22,6 +20,10 @@ module Mui
     end
 
     private
+
+    def all_commands
+      @all_commands ||= COMMANDS + plugin_command_names
+    end
 
     def plugin_command_names
       Mui.config.commands.keys.map(&:to_s)

@@ -14,14 +14,19 @@ module Mui
     end
 
     def input(char)
-      @buffer = @buffer[0...@cursor_pos].to_s + char + @buffer[@cursor_pos..].to_s
+      rest = @buffer[@cursor_pos..].to_s
+      @buffer = @buffer[0...@cursor_pos].to_s
+      @buffer << char
+      @buffer << rest
       @cursor_pos += char.length
     end
 
     def backspace
       return if @cursor_pos.zero?
 
-      @buffer = @buffer[0...(@cursor_pos - 1)].to_s + @buffer[@cursor_pos..].to_s
+      rest = @buffer[@cursor_pos..].to_s
+      @buffer = @buffer[0...(@cursor_pos - 1)].to_s
+      @buffer << rest
       @cursor_pos -= 1
     end
 

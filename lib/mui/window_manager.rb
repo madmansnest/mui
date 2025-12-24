@@ -195,21 +195,18 @@ module Mui
     end
 
     def find_window_in_direction(direction)
-      return nil unless @active_window
-
       predicate = DIRECTION_PREDICATES[direction]
       return nil unless predicate
 
       current_x = @active_window.x + (@active_window.width / 2)
       current_y = @active_window.y + (@active_window.height / 2)
 
-      candidates = windows.reject { |w| w == @active_window }
-                          .select { |w| predicate.call(w, @active_window) }
+      candidates = windows.select { |w| w != @active_window && predicate.call(w, @active_window) }
 
       candidates.min_by do |w|
         wx = w.x + (w.width / 2)
         wy = w.y + (w.height / 2)
-        Math.sqrt(((wx - current_x)**2) + ((wy - current_y)**2))
+        ((wx - current_x)**2) + ((wy - current_y)**2)
       end
     end
 
