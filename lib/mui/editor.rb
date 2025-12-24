@@ -10,6 +10,9 @@ module Mui
     def initialize(file_path = nil, adapter: TerminalAdapter::Curses.new, load_config: true)
       Mui.load_config if load_config
 
+      # Enable YJIT for Ruby 3.3+
+      RubyVM::YJIT.enable if Mui.config.get(:use_yjit) && defined?(RubyVM::YJIT) && RubyVM::YJIT.respond_to?(:enable)
+
       @adapter = adapter
       @color_manager = ColorManager.new
       @adapter.color_resolver = @color_manager

@@ -28,6 +28,19 @@ class TestMuiApi < Minitest::Test
     assert_equal "mui", Mui.config.get(:colorscheme)
   end
 
+  def test_handling_yjit_config
+    # Default use YJIT
+    assert Mui.config.get(:use_yjit)
+
+    Mui.set :use_yjit, false
+
+    refute Mui.config.get(:use_yjit)
+
+    Mui.set :use_yjit, true
+
+    assert Mui.config.get(:use_yjit)
+  end
+
   def test_use_adds_gem_to_plugin_manager
     Mui.use "mui-lsp", "~> 0.1"
 

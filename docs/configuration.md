@@ -92,6 +92,15 @@ Mui.set :leader, " "  # Space as leader
 Mui.set :timeoutlen, 1000
 ```
 
+### YJIT
+
+```ruby
+# Enable/disable YJIT (default: true, Ruby 3.3+ only)
+Mui.set :use_yjit, true
+```
+
+YJIT is Ruby's Just-In-Time compiler that improves performance. When enabled, Mui automatically activates YJIT at startup if your Ruby version supports it (Ruby 3.3+). On older Ruby versions, this setting is safely ignored.
+
 ---
 
 ## Custom Key Mappings
@@ -278,6 +287,9 @@ Mui.set :expandtab, true
 
 # Leader key
 Mui.set :leader, " "
+
+# YJIT (Ruby 3.3+)
+Mui.set :use_yjit, true
 
 # Plugins
 Mui.use "mui-lsp"
