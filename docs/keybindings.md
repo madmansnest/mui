@@ -28,6 +28,8 @@ nav_order: 3
 | `0` | Move to line start |
 | `^` | Move to first non-blank character |
 | `$` | Move to line end |
+| `Shift-Left` | Move to end of previous line |
+| `Shift-Right` | Move to start of next line |
 
 ### Word Movement
 
@@ -144,6 +146,8 @@ Example: `"ayy` yanks line to register `a`, `"ap` pastes from register `a`.
 | `Ctrl-p` | Previous completion candidate |
 | `Tab` | Accept completion |
 | Arrow keys | Move cursor |
+| `Shift-Left` | Move to end of previous line |
+| `Shift-Right` | Move to start of next line |
 | `Backspace` | Delete character before cursor |
 
 ---

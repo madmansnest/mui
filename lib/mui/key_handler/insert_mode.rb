@@ -40,6 +40,10 @@ module Mui
           handle_backspace
         when KeyCode::ENTER_CR, KeyCode::ENTER_LF, Curses::KEY_ENTER
           handle_enter
+        when KeyCode::SHIFT_LEFT
+          handle_shift_left
+        when KeyCode::SHIFT_RIGHT
+          handle_shift_right
         else
           handle_character_input(key)
         end
@@ -88,6 +92,32 @@ module Mui
 
       def handle_move_down
         window.move_down
+        result
+      end
+
+      def handle_line_start
+        window.move_to_line_start
+        result
+      end
+
+      def handle_line_end
+        window.move_to_line_end
+        result
+      end
+
+      def handle_shift_left
+        return result unless cursor_row.positive?
+
+        window.move_up
+        window.move_to_line_end
+        result
+      end
+
+      def handle_shift_right
+        return result unless cursor_row < buffer.line_count - 1
+
+        window.move_down
+        window.move_to_line_start
         result
       end
 

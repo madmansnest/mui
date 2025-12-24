@@ -187,6 +187,63 @@ class TestWindow < Minitest::Test
     end
   end
 
+  class TestMoveToLineStart < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello world"
+      @window = Mui::Window.new(@buffer, width: 80, height: 24)
+    end
+
+    def test_moves_cursor_to_column_zero
+      @window.cursor_col = 5
+
+      @window.move_to_line_start
+
+      assert_equal 0, @window.cursor_col
+    end
+
+    def test_does_nothing_when_already_at_start
+      @window.cursor_col = 0
+
+      @window.move_to_line_start
+
+      assert_equal 0, @window.cursor_col
+    end
+  end
+
+  class TestMoveToLineEnd < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello world"
+      @window = Mui::Window.new(@buffer, width: 80, height: 24)
+    end
+
+    def test_moves_cursor_to_end_of_line
+      @window.cursor_col = 0
+
+      @window.move_to_line_end
+
+      assert_equal 11, @window.cursor_col
+    end
+
+    def test_does_nothing_when_already_at_end
+      @window.cursor_col = 11
+
+      @window.move_to_line_end
+
+      assert_equal 11, @window.cursor_col
+    end
+
+    def test_works_on_empty_line
+      @buffer.lines[0] = ""
+      @window.cursor_col = 0
+
+      @window.move_to_line_end
+
+      assert_equal 0, @window.cursor_col
+    end
+  end
+
   class TestEnsureCursorVisible < Minitest::Test
     def setup
       @buffer = Mui::Buffer.new

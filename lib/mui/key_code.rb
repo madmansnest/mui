@@ -26,5 +26,9 @@ module Mui
     CTRL_S = 19
     CTRL_V = 22
     CTRL_W = 23
+
+    # Shift key codes (Shift+letter)
+    SHIFT_LEFT = 393
+    SHIFT_RIGHT = 402
   end
 end

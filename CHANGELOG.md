@@ -1,5 +1,12 @@
 ## [Unreleased]
 
+### Added
+- Shift+Arrow key navigation across lines:
+  - `Shift+Left` at line start moves to end of previous line
+  - `Shift+Right` at line end moves to start of next line
+  - Works in both Normal mode and Insert mode
+  - Boundary behavior: does nothing at first/last line
+
 ### Changed
 - FileCompleter now includes hidden files (dotfiles) in completion candidates
   - Previously, files starting with `.` were excluded from file path completion

@@ -147,6 +147,14 @@ module Mui
       clamp_cursor_col
     end
 
+    def move_to_line_start
+      @cursor_col = 0
+    end
+
+    def move_to_line_end
+      @cursor_col = @buffer.line(@cursor_row).length
+    end
+
     def clamp_cursor_to_line(buffer)
       max_col = [buffer.line(@cursor_row).length - 1, 0].max
       @cursor_col = max_col if @cursor_col > max_col

@@ -65,6 +65,46 @@ class TestKeyHandlerNormalMode < Minitest::Test
 
       assert_equal 0, @window.cursor_row
     end
+
+    def test_shift_left_at_line_start_moves_to_previous_line_end
+      @window.cursor_row = 1
+      @window.cursor_col = 0
+
+      @handler.handle(Curses::KEY_SLEFT)
+
+      assert_equal 0, @window.cursor_row
+      assert_equal 4, @window.cursor_col
+    end
+
+    def test_shift_left_at_first_line_start_does_nothing
+      @window.cursor_row = 0
+      @window.cursor_col = 0
+
+      @handler.handle(Curses::KEY_SLEFT)
+
+      assert_equal 0, @window.cursor_row
+      assert_equal 0, @window.cursor_col
+    end
+
+    def test_shift_right_at_line_end_moves_to_next_line_start
+      @window.cursor_row = 0
+      @window.cursor_col = 4
+
+      @handler.handle(Curses::KEY_SRIGHT)
+
+      assert_equal 1, @window.cursor_row
+      assert_equal 0, @window.cursor_col
+    end
+
+    def test_shift_right_at_last_line_end_does_nothing
+      @window.cursor_row = 1
+      @window.cursor_col = 4
+
+      @handler.handle(Curses::KEY_SRIGHT)
+
+      assert_equal 1, @window.cursor_row
+      assert_equal 4, @window.cursor_col
+    end
   end
 
   class TestWordMovement < Minitest::Test
