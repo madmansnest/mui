@@ -1,0 +1,19 @@
+# Ruby LSP configuration for Mui
+# https://shopify.github.io/ruby-lsp/
+
+indexing:
+  # Include all lib files for indexing
+  included_patterns:
+    - "lib/**/*.rb"
+
+  # Exclude test files from indexing to speed up
+  excluded_patterns:
+    - "test/**/*.rb"
+    - "test/fixtures/**/*.rb"
+
+  # Exclude development-only gems from indexing
+  excluded_gems:
+    - rubocop
+    - rubocop-rake
+    - rubocop-minitest
+    - rubocop-performance
