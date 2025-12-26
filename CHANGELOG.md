@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Removed
+- Dropped Ruby 3.2 support (EOL: 2025-03-31)
+  - Minimum required Ruby version is now 3.3.0
+
 ### Changed
 - Performance improvements across multiple modules:
   - String concatenation: Use `<<` instead of `+` for buffer operations (`command_line.rb`, `search_input.rb`)

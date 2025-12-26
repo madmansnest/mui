@@ -25,7 +25,7 @@ gem install mui
 
 ### Requirements
 
-- Ruby 3.0 or later
+- Ruby 3.3 or later
 - A terminal that supports 256 colors
 
 ## Basic Usage

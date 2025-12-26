@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = "Mui (無為) is a Vim-like TUI text editor written in Ruby. Inspired by the concept of 'wu wei' (effortless action), it aims to be a minimal yet extensible editor."
   spec.homepage = "https://s-h-gamelinks.github.io/mui/"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.2.0"
+  spec.required_ruby_version = ">= 3.3.0"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
   spec.metadata["homepage_uri"] = spec.homepage
