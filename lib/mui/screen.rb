@@ -67,8 +67,8 @@ module Mui
     end
 
     def move_cursor(y, x)
-      x = [[x, 0].max, @width - 1].min
-      y = [[y, 0].max, @height - 1].min
+      x = x.clamp(0, @width - 1)
+      y = y.clamp(0, @height - 1)
       @adapter.setpos(y, x)
     end
 

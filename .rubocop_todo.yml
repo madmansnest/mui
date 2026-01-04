@@ -128,12 +128,6 @@ Naming/VariableNumber:
     - 'test/e2e/test_motion.rb'
     - 'test/mui/test_register.rb'
 
-# Offense count: 2
-# This cop supports safe autocorrection (--autocorrect).
-Style/ComparableClamp:
-  Exclude:
-    - 'lib/mui/screen.rb'
-
 # Offense count: 25
 # Configuration parameters: AllowedConstants.
 Style/Documentation:
