@@ -295,3 +295,13 @@ end
 
 {: .note }
 `run_interactive_command` blocks and waits for the command to complete. Use this only for interactive CLI tools that require terminal access.
+
+For commands that need direct terminal control, use `run_tty_command` instead. It leaves stdout and
+stderr attached to the terminal, then waits for `Enter` before returning to Mui so you can inspect
+the output.
+
+```ruby
+command :debug_test do |ctx|
+  ctx.run_tty_command("bundle exec ruby -Ilib -Itest test/models/user_test.rb")
+end
+```

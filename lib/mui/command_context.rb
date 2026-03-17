@@ -82,9 +82,32 @@ module Mui
       end
     end
 
+    def run_tty_command(cmd)
+      @editor.suspend_ui do
+        success = system(cmd)
+        # rubocop:disable Style/SpecialGlobalVars
+        status = $?
+        # rubocop:enable Style/SpecialGlobalVars
+        exit_status = status&.exitstatus
+        wait_for_tty_command_return
+        {
+          exit_status:,
+          success: success == true && exit_status.zero?
+        }
+      end
+    end
+
     # Check if a command exists in PATH
     def command_exists?(cmd)
       system("which #{cmd} > /dev/null 2>&1")
+    end
+
+    private
+
+    def wait_for_tty_command_return
+      $stdout.print("\nPress Enter to return to Mui...")
+      $stdout.flush
+      $stdin.gets
     end
   end
 end

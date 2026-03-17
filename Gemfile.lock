@@ -12,6 +12,9 @@ GEM
     clipboard (2.0.0)
     curses (1.5.3)
     date (3.5.0)
+    debug (1.11.1)
+      irb (~> 1.10)
+      reline (>= 0.3.8)
     erb (6.0.0)
     io-console (0.8.1)
     irb (1.15.3)
@@ -91,6 +94,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  debug (~> 1.11)
   irb
   minitest (~> 6.0)
   mui!
@@ -107,6 +111,7 @@ CHECKSUMS
   clipboard (2.0.0) sha256=88d048fd2097506451c382d3ecf3acd9cdf24f581d8119437e55c1efc04e01c8
   curses (1.5.3) sha256=86d219442e7fe78e68c609e6884f08b439b7508cf3f9d5b914f75c106e77bf7c
   date (3.5.0) sha256=5e74fd6c04b0e65d97ad4f3bb5cb2d8efb37f386cc848f46310b4593ffc46ee5
+  debug (1.11.1) sha256=2e0b0ac6119f2207a6f8ac7d4a73ca8eb4e440f64da0a3136c30343146e952b6
   erb (6.0.0) sha256=2730893f9d8c9733f16cab315a4e4b71c1afa9cabc1a1e7ad1403feba8f52579
   io-console (0.8.1) sha256=1e15440a6b2f67b6ea496df7c474ed62c860ad11237f29b3bd187f054b925fcb
   irb (1.15.3) sha256=4349edff1efa7ff7bfd34cb9df74a133a588ba88c2718098b3b4468b81184aaa

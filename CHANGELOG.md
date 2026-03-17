@@ -2,6 +2,9 @@
 
 ### Added
 - Additional syntax highlighting for `.muirc` and `.lmuirc`
+- Added CommandContext#run_tty_command(cmd) for commands that need direct terminal control
+  - run_tty_command now waits for Enter before returning to Mui, so command output can be reviewed
+  - Documented the difference between run_interactive_command and run_tty_command
 
 ## [0.5.0] - 2025-12-26
 
