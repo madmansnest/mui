@@ -66,6 +66,10 @@ class TestCommandContext < Minitest::Test
     assert_respond_to @context, :run_interactive_command
   end
 
+  def test_responds_to_run_tty_command
+    assert_respond_to @context, :run_tty_command
+  end
+
   def test_responds_to_command_exists
     assert_respond_to @context, :command_exists?
   end
